@@ -8,16 +8,20 @@ type Kademlia struct {
 
 func (kademlia *Kademlia) LookupContact(target *Contact) {
 	c1 := make(chan []Contact)
+	c2 := make(chan []Contact)
 	var initiatorList []Contact
-	var uncontactedContactsList []Contact
+	var resultList [][]Contact
+	//var ContactedList []Contact
 	initiatorList = kademlia.routingTable.FindClosestContacts(target.ID, kademlia.alpha)
 	for i := 0; i < kademlia.alpha; i++ {
 		go kademlia.channelRec(&initiatorList[i], c1)
 	}
 
-	var c1Output []Contact = <-c1
+	resultList = append(resultList, <-c1)
 	for i := 0; i < kademlia.alpha; i++ {
-		go kademlia.channelRec(&c1Output[i], c1)
+		for j := 0; j < len(resultList[i]) || j >= bucketSize/kademlia.alpha; j++ {
+			go kademlia.channelRec(&resultList[i][j], c2)
+		}
 	}
 
 }
@@ -32,5 +36,5 @@ func (kademlia *Kademlia) Store(data []byte) {
 
 func (kademlia *Kademlia) channelRec(contact *Contact, channel chan []Contact) {
 
-	//channel <- kademlia.network.SendFindContactMessage(contact)
+	channel <- kademlia.network.SendFindContactMessage(contact)
 }

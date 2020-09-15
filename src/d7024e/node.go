@@ -3,6 +3,7 @@ package d7024e
 import (
 	"net/http"
 	"time"
+	"fmt"
 )
 
 type Node struct {
@@ -13,7 +14,7 @@ type Node struct {
 	kademlia *Kademlia
 }
 
-const alpha = 3 // Alpha value should probably be stored in a Kademlia related file
+const alpha = 1 // Alpha value should probably be stored in a Kademlia related file
 
 // NewNode Constructor function for Node class
 func NewNode(address string) *Node {
@@ -29,14 +30,14 @@ func NewNode(address string) *Node {
 
 // SpinupNode creates http server and listens on contact address
 // Current parameters are temporary for testing to send messages
-func (node *Node) SpinupNode(target *Contact, receiver *Contact) {
+func (node *Node) SpinupNode(target *Contact) {
 	serveMux := http.NewServeMux()
 	go node.net.Listen(node.contact.Address, serveMux)
 	for {
+		time.Sleep(1 * time.Second)
 		if target != nil {
-			node.net.SendFindContactMessage(target, receiver)
+			fmt.Println("Contact found:", node.kademlia.LookupContact(target).Address)
 		}		
-		time.Sleep(2 * time.Second)
 	}
 }
 

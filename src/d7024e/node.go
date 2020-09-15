@@ -6,11 +6,11 @@ import (
 )
 
 type Node struct {
-	Contact *Contact
-	Rt *RoutingTable
-	Vht *ValueHashtable
-	Net *Network
-	Kademlia *Kademlia
+	contact *Contact
+	rt *RoutingTable
+	vht *ValueHashtable
+	net *Network
+	kademlia *Kademlia
 }
 
 const alpha = 3 // Alpha value should probably be stored in a Kademlia related file
@@ -19,11 +19,11 @@ const alpha = 3 // Alpha value should probably be stored in a Kademlia related f
 func NewNode(address string) *Node {
 	node := &Node{}
 	kademliaID := NewRandomKademliaID()
-	node.Contact = NewContact(kademliaID, address)
-	node.Rt = NewRoutingTable(node.Contact)
-	node.Vht = NewValueHashtable()
-	node.Net = NewNetwork(node.Rt, node.Vht)
-	node.Kademlia = NewKademlia(node.Net, node.Rt, alpha)
+	node.contact = NewContact(kademliaID, address)
+	node.rt = NewRoutingTable(node.contact)
+	node.vht = NewValueHashtable()
+	node.net = NewNetwork(node.rt, node.vht)
+	node.kademlia = NewKademlia(node.net, node.rt, alpha)
 	return node
 }
 
@@ -31,14 +31,21 @@ func NewNode(address string) *Node {
 // Current parameters are temporary for testing to send messages
 func (node *Node) SpinupNode(target *Contact, receiver *Contact) {
 	serveMux := http.NewServeMux()
-	go node.Net.Listen(node.Contact.Address, serveMux)
+	go node.net.Listen(node.contact.Address, serveMux)
 	for {
 		if target != nil {
-			node.Net.SendFindContactMessage(target, receiver)
+			node.net.SendFindContactMessage(target, receiver)
 		}		
 		time.Sleep(2 * time.Second)
 	}
-}// AddContact adds an contact to the RoutingTable of the node
+}
+
+// AddContact adds an contact to the RoutingTable of the node
 func (node *Node) AddContact(contact *Contact) {
 	node.rt.AddContact(*contact)
+}
+
+// Contact returns the contact of the node
+func (node *Node) Contact() *Contact {
+	return node.contact
 }

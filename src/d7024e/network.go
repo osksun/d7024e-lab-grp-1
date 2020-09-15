@@ -135,7 +135,6 @@ func (network *Network) Listen(address string, serveMux *http.ServeMux) {
 }
 
 func (network *Network) SendPingMessage(receiver *Contact) bool {
-	// TODO
 	rm := sendhelper("ping", "", nil, nil, receiver.Address)
 	// locally set rm message (but yes kinda counterintuitive)
 	if rm.Message == "error" {
@@ -146,7 +145,6 @@ func (network *Network) SendPingMessage(receiver *Contact) bool {
 }
 
 func (network *Network) SendFindContactMessage(target *Contact, receiver *Contact) []Contact {
-	// TODO
 	fmt.Println("Sending 'SendFindContactMessage'")
 	rm := sendhelper("findcontact", "", nil, target, receiver.Address)
 	return rm.ContactList
@@ -154,14 +152,12 @@ func (network *Network) SendFindContactMessage(target *Contact, receiver *Contac
 
 // Retrieves the data from the receiver node using the hash key
 func (network *Network) SendFindDataMessage(receiver *Contact, hash string) {
-	// TODO
 	rm := sendhelper("finddata", hash, nil, nil, receiver.Address)
 	log.Println(rm.Message)
 }
 
 // Tells the receiving node to store the data
 func (network *Network) SendStoreMessage(receiver *Contact, data []byte) {
-	// TODO
 	rm := sendhelper("store", "", data, nil, receiver.Address)
 	log.Println(rm.Message)
 }

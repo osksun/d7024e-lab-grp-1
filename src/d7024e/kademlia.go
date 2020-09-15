@@ -1,9 +1,28 @@
 package d7024e
 
+import (
+	"fmt"
+)
+
 type Kademlia struct {
-	network      *Network
-	routingTable *RoutingTable
-	alpha        int // also known as the alpha value that determines how many concurrent findclosestcontacts calls will exist
+    net		*Network
+    rt		*RoutingTable
+    alpha	int // also known as the alpha value that determines how many concurrent findclosestcontacts calls will exist
+}
+
+// NewKademlia Constructor function for Kademlia class
+func NewKademlia(net *Network, rt *RoutingTable, alpha int) *Kademlia {
+	kademlia := &Kademlia{}
+	kademlia.net = net
+	kademlia.rt = rt
+	kademlia.alpha = alpha
+	return kademlia
+}
+
+func printContacts(contacts []Contact) {
+	for i, contact := range contacts {
+		fmt.Println(i, contact.String(), "distance:", contact.distance)
+	}
 }
 
 func (kademlia *Kademlia) LookupContact(target *Contact) Contact {

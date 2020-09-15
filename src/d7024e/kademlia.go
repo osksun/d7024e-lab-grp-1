@@ -1,29 +1,39 @@
 package d7024e
 
+import (
+	"fmt"
+)
+
 type Kademlia struct {
-	network      *Network
-	routingTable *RoutingTable
-	alpha        int // also known as the alpha value that determines how many concurrent findclosestcontacts calls will exist
+    net		*Network
+    rt		*RoutingTable
+    alpha	int // also known as the alpha value that determines how many concurrent findclosestcontacts calls will exist
+}
+
+
+func printContacts(contacts []Contact) {
+	for i, contact := range contacts {
+		fmt.Println(i, contact.String(), "distance:", contact.distance)
+	}
 }
 
 func (kademlia *Kademlia) LookupContact(target *Contact) {
-	c1 := make(chan []Contact)
-	c2 := make(chan []Contact)
+	//c1 := make(chan []Contact)
 	var initiatorList []Contact
-	var resultList [][]Contact
-	//var ContactedList []Contact
-	initiatorList = kademlia.routingTable.FindClosestContacts(target.ID, kademlia.alpha)
+	//var uncontactedContactsList []Contact
+	initiatorList = kademlia.rt.FindClosestContacts(target.ID, bucketSize)
+	printContacts(initiatorList)
+	/*
 	for i := 0; i < kademlia.alpha; i++ {
 		go kademlia.channelRec(&initiatorList[i], c1)
 	}
-
-	resultList = append(resultList, <-c1)
+	*/
+	/*
+	var c1Output []Contact = <-c1
 	for i := 0; i < kademlia.alpha; i++ {
-		for j := 0; j < len(resultList[i]) || j >= bucketSize/kademlia.alpha; j++ {
-			go kademlia.channelRec(&resultList[i][j], c2)
-		}
+		go kademlia.channelRec(&c1Output[i], c1)
 	}
-
+	*/
 }
 
 func (kademlia *Kademlia) LookupData(hash string) {
@@ -36,5 +46,5 @@ func (kademlia *Kademlia) Store(data []byte) {
 
 func (kademlia *Kademlia) channelRec(contact *Contact, channel chan []Contact) {
 
-	channel <- kademlia.network.SendFindContactMessage(contact)
+	//channel <- kademlia.network.SendFindContactMessage(contact)
 }

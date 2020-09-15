@@ -50,28 +50,33 @@ func (kademlia *Kademlia) Store(data []byte) {
 	// TODO
 }
 
-
-func (kademlia *Kademlia) GoFindNode(target *Contact, contact *Contact, channel chan []Contact) {
+func (kademlia *Kademlia) goFindNode(target *Contact, contact *Contact, channel chan []Contact) {
 	var queriedList []Contact
 	var requestList ContactCandidates
-	var resultList = kademlia.network.SendFindContactMessage(target, contact)
+	var resultList = kademlia.net.SendFindContactMessage(target, contact)
 	var flag = true
 	for ok := true; ok; ok = flag {
 		for i := 0; i < len(resultList); i++ {
 			if kademlia.EqualKademliaID(queriedList, &resultList[i]) {
 				queriedList[i] = resultList[i]
-				requestList.Append(kademlia.network.SendFindContactMessage(target, &resultList[i]))
+				requestList.Append(kademlia.net.SendFindContactMessage(target, &resultList[i]))
 			}
 		}
 		requestList.Sort()
 		var tempCon Contact
-		resultList[0].CalcDistance(target.ID)
-		tempCon = requestList.GetContacts(1)[0]
-		tempCon.CalcDistance(target.ID)
-		if !(tempCon.Less(&resultList[0])) {
-			ok = false
+		for i := 0; i < len(resultList); i++ {
+			resultList[i].CalcDistance(target.ID)
+		}
+		if requestList.contacts != nil {
+			tempCon = requestList.GetContacts(1)[0]
+			tempCon.CalcDistance(target.ID)
+			if !(tempCon.Less(&resultList[0])) {
+				flag = false
+			} else {
+				resultList = requestList.GetContacts(bucketSize)
+			}
 		} else {
-			resultList = requestList.GetContacts(bucketSize)
+			flag = false
 		}
 	}
 	channel <- resultList

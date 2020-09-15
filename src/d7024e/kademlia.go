@@ -10,6 +10,14 @@ type Kademlia struct {
     alpha	int // also known as the alpha value that determines how many concurrent findclosestcontacts calls will exist
 }
 
+// NewKademlia Constructor function for Kademlia class
+func NewKademlia(net *Network, rt *RoutingTable, alpha int) *Kademlia {
+	kademlia := &Kademlia{}
+	kademlia.net = net
+	kademlia.rt = rt
+	kademlia.alpha = alpha
+	return kademlia
+}
 
 func printContacts(contacts []Contact) {
 	for i, contact := range contacts {

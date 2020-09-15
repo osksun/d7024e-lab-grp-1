@@ -12,4 +12,4 @@
 *.out
 
 # Text editor VS Code
-src/.vscode/
+*.vscode/

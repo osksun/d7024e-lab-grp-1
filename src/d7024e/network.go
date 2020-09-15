@@ -130,7 +130,7 @@ func sendhelper(mes string, hash string, data []byte, target *Contact, address s
 // I guess you need to run this function as a go func
 func (network *Network) Listen(address string, serveMux *http.ServeMux) {
 	fmt.Println("Server starting on:", address)
-	serveMux.HandleFunc("/test", network.handleListen)
+	serveMux.HandleFunc("/msg", network.handleListen)
 	log.Fatal(http.ListenAndServe(address, serveMux))
 }
 

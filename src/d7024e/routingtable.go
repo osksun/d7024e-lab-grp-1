@@ -9,6 +9,15 @@ type RoutingTable struct {
 	buckets [IDLength * 8]*bucket
 }
 
+// NewRoutingTable returns a new instance of a RoutingTable
+func NewRoutingTable(me *Contact) *RoutingTable {
+	routingTable := &RoutingTable{}
+	for i := 0; i < IDLength*8; i++ {
+		routingTable.buckets[i] = newBucket()
+	}
+	routingTable.me = me
+	return routingTable
+}
 
 // AddContact add a new contact to the correct Bucket
 func (routingTable *RoutingTable) AddContact(contact Contact) {

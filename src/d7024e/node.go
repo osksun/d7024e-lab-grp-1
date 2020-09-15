@@ -13,11 +13,14 @@ type Node struct {
 	Kademlia *Kademlia
 }
 
+const alpha = 3 // Alpha value should probably be stored in a Kademlia related file
+
 // NewNode Constructor function for Node class
-func NewNode(contact *Contact, alpha int) *Node {
+func NewNode(address string) *Node {
 	node := &Node{}
-	node.Contact = contact
-	node.Rt = NewRoutingTable(contact)
+	kademliaID := NewRandomKademliaID()
+	node.Contact = NewContact(kademliaID, address)
+	node.Rt = NewRoutingTable(node.Contact)
 	node.Vht = NewValueHashtable()
 	node.Net = NewNetwork(node.Rt, node.Vht)
 	node.Kademlia = NewKademlia(node.Net, node.Rt, alpha)

@@ -27,6 +27,12 @@ type response_msg struct {
 	Data        []byte
 }
 
+// NewNetwork Constructor function for Network class
+func NewNetwork(rt *RoutingTable, ht *ValueHashtable) *Network {
+	network := &Network{}
+	network.rt = rt
+	network.ht = ht
+	return network
 }
 
 // Helper function for listen

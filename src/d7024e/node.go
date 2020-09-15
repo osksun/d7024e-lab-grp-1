@@ -27,7 +27,8 @@ func NewNode(address string) *Node {
 	return node
 }
 
-// SpinupNode creates
+// SpinupNode creates http server and listens on contact address
+// Current parameters are temporary for testing to send messages
 func (node *Node) SpinupNode(target *Contact, receiver *Contact) {
 	serveMux := http.NewServeMux()
 	go node.Net.Listen(node.Contact.Address, serveMux)

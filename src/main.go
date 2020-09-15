@@ -14,9 +14,9 @@ func main() {
 	node2.AddContact(node1.Contact())
 	node2.AddContact(node3.Contact())
 	// Spinup nodes
-	go node1.SpinupNode(node3.Contact(), node2.Contact()) // Target, Receiver
-	go node2.SpinupNode(nil, nil)
-	go node3.SpinupNode(nil, nil)
+	go node1.SpinupNode(node3.Contact())
+	go node2.SpinupNode(nil)
+	go node3.SpinupNode(nil)
 	// Infinite loop to prevent program from exiting
 	for {}
 }

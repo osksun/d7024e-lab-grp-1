@@ -38,4 +38,7 @@ func (node *Node) SpinupNode(target *Contact, receiver *Contact) {
 		}		
 		time.Sleep(2 * time.Second)
 	}
+}// AddContact adds an contact to the RoutingTable of the node
+func (node *Node) AddContact(contact *Contact) {
+	node.rt.AddContact(*contact)
 }

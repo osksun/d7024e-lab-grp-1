@@ -31,11 +31,13 @@ func (kademlia *Kademlia) LookupContact(target *Contact) Contact {
 	var initiatorList []Contact
 	var candidateList ContactCandidates
 	//var ContactedList []Contact
-	initiatorList = kademlia.routingTable.FindClosestContacts(target.ID, kademlia.alpha)
+	initiatorList = kademlia.rt.FindClosestContacts(target.ID, kademlia.alpha)
 	for i := 0; i < kademlia.alpha; i++ {
-		go kademlia.GoFindNode(target, &initiatorList[i], c1)
+		go kademlia.goFindNode(target, &initiatorList[i], c1)
 	}
-	candidateList.Append(<-c1)
+	for i := 0; i < kademlia.alpha; i++ {
+		candidateList.Append(<-c1)
+	}
 	candidateList.Sort()
 	return candidateList.GetContacts(1)[0]
 }
@@ -48,10 +50,6 @@ func (kademlia *Kademlia) Store(data []byte) {
 	// TODO
 }
 
-func (kademlia *Kademlia) channelRec(contact *Contact, channel chan []Contact) {
-
-	//hannel <- kademlia.network.SendFindContactMessage(contact)
-}
 
 func (kademlia *Kademlia) GoFindNode(target *Contact, contact *Contact, channel chan []Contact) {
 	var queriedList []Contact

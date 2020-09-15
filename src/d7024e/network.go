@@ -145,7 +145,6 @@ func (network *Network) SendPingMessage(receiver *Contact) bool {
 }
 
 func (network *Network) SendFindContactMessage(target *Contact, receiver *Contact) []Contact {
-	fmt.Println("Sending 'SendFindContactMessage'")
 	rm := sendhelper("findcontact", "", nil, target, receiver.Address)
 	return rm.ContactList
 }

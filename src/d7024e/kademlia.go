@@ -59,8 +59,13 @@ func (kademlia *Kademlia) goFindNode(target *Contact, contact *Contact, channel 
 		for i := 0; i < len(resultList); i++ {
 			if kademlia.EqualKademliaID(queriedList, &resultList[i]) {
 				queriedList[i] = resultList[i]
+			if !kademlia.EqualKademliaID(queriedList, &resultList[i]) {
+				queriedList = append(queriedList, resultList[i])
 				requestList.Append(kademlia.net.SendFindContactMessage(target, &resultList[i]))
 			}
+		}
+		for i := 0; i < requestList.Len(); i++ {
+			requestList.contacts[i].CalcDistance(target.ID)
 		}
 		requestList.Sort()
 		var tempCon Contact
@@ -73,7 +78,7 @@ func (kademlia *Kademlia) goFindNode(target *Contact, contact *Contact, channel 
 			if !(tempCon.Less(&resultList[0])) {
 				flag = false
 			} else {
-				resultList = requestList.GetContacts(bucketSize)
+				resultList = requestList.GetContacts(requestList.Len())
 			}
 		} else {
 			flag = false
@@ -85,7 +90,7 @@ func (kademlia *Kademlia) goFindNode(target *Contact, contact *Contact, channel 
 // Searches argument list to see whether or not argument contact exists
 func (kademlia *Kademlia) EqualKademliaID(contactList []Contact, contact *Contact) bool {
 	for i := 0; i < len(contactList); i++ {
-		if contact.ID == contactList[i].ID {
+		if contact.ID.Equals(contactList[i].ID) {
 			return true
 		}
 	}

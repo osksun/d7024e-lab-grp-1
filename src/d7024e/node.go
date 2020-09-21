@@ -14,7 +14,7 @@ type Node struct {
 	kademlia *Kademlia
 }
 
-const alpha =  35 // Alpha value should probably be stored in a Kademlia related file
+const alpha = 35 // Alpha value should probably be stored in a Kademlia related file
 
 // NewNode Constructor function for Node class
 func NewNode(address string) *Node {
@@ -56,8 +56,9 @@ func (node *Node) JoinNetwork(address string) {
 	// TODO Check if node is participating or not
 	kademliaID := NewRandomKademliaID()
 	node.contact = NewContact(kademliaID, node.contact.Address)
-	node.net.SendPingMessage(address, kademliaID)
+	//node.net.SendPingMessage(address, kademliaID)
 	node.kademlia.LookupContact(node.contact)
+	node.kademlia.LookupContact()
 
 }
 

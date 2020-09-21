@@ -54,7 +54,7 @@ func (node *Node) Contact() *Contact {
 
 func (node *Node) JoinNetwork(address string) {
 	// TODO Check if node is participating or not
-	var refreshContact *Contact
+	var refreshContact *Contact // dummy contact
 	kademliaID := NewRandomKademliaID()
 	node.contact = NewContact(kademliaID, node.contact.Address)
 	//node.net.SendPingMessage(address, kademliaID)

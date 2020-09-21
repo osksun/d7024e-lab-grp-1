@@ -2,9 +2,6 @@ package main
 
 import (
 	"./d7024e"
-	"strconv"
-	"math/rand"
-	"fmt"
 )
 
 func leftPad(str string, pad rune, lenght int) string {
@@ -16,38 +13,51 @@ func leftPad(str string, pad rune, lenght int) string {
 
 func main() {
 	// Create nodes
-	const nNodes = 50
-	var nodes [nNodes]*d7024e.Node
-	for i := 0; i < nNodes; i++ {
-		nodes[i] = d7024e.NewNode("localhost:" + strconv.Itoa(i+10000))
-	}
-	// Create random connections
-	rand.Seed(0)
-	nConnections := 10000 // Note that this is not the same number as the number of final connnections due to not avoiding collisions
-	for i := 0; i < nConnections; i++ {
-		n := rand.Intn(nNodes)
-		c := rand.Intn(nNodes - 1) 
-		if (c >= n) {
-			c++
-		}
-		nodes[n].AddContact(nodes[c].Contact())
-	}
-	
-	// Count number of contacts in each node's bucktes
-	for i := 0; i < nNodes; i++ {
-		nConnections := 0
-		buckets := nodes[i].Rt().Buckets()
-		for j := 0; j < len(buckets); j++ {
-			nConnections += buckets[j].Len()
-		}
-		fmt.Println(i, "has", nConnections, "connections")
-	}
+	node1 := d7024e.NewNode("localhost:8000")
+	node2 := d7024e.NewNode("localhost:8001")
+	node3 := d7024e.NewNode("localhost:8002")
+	node4 := d7024e.NewNode("localhost:8003")
 
-	// Spinup nodes
-	for i := 1; i < nNodes; i++ {
-		go nodes[i].SpinupNode(nil)
-	}
+	node1.AddContact(node2.Contact())
+	node2.AddContact(node1.Contact())
+	node2.AddContact(node3.Contact())
+	//node3.SpinupNode(nil)
 
-	targetContact := nodes[20].Contact()
-	nodes[0].SpinupNode(targetContact)
+	node4.JoinNetwork("localhost:8001")
+	/*
+		const nNodes = 50
+		var nodes [nNodes]*d7024e.Node
+		for i := 0; i < nNodes; i++ {
+			nodes[i] = d7024e.NewNode("localhost:" + strconv.Itoa(i+10000))
+		}
+
+			// Create random connections
+			rand.Seed(0)
+			nConnections := 10000 // Note that this is not the same number as the number of final connnections due to not avoiding collisions
+			for i := 0; i < nConnections; i++ {
+				n := rand.Intn(nNodes)
+				c := rand.Intn(nNodes - 1)
+				if c >= n {
+					c++
+				}
+				nodes[n].AddContact(nodes[c].Contact())
+			}
+
+			// Count number of contacts in each node's buckets
+			for i := 0; i < nNodes; i++ {
+				nConnections := 0
+				buckets := nodes[i].Rt().Buckets()
+				for j := 0; j < len(buckets); j++ {
+					nConnections += buckets[j].Len()
+				}
+				fmt.Println(i, "has", nConnections, "connections")
+			}
+
+			// Spinup nodes
+			for i := 1; i < nNodes; i++ {
+				go nodes[i].SpinupNode(nil)
+			}
+
+			targetContact := nodes[20].Contact()
+			nodes[0].SpinupNode(targetContact)*/
 }

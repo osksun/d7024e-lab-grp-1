@@ -69,19 +69,19 @@ func (kademliaID *KademliaID) String() string {
 }
 
 // Returns an ID which is not itself or a neighbour
-func (kademliaID *KademliaID) IDwithinRange(source *KademliaID) *KademliaID {
+func (kademliaID *KademliaID) IDwithinRange() *KademliaID {
 	var flag bool = true
 	var resultKademliaID *KademliaID
-	var neighbouringID *KademliaID = source
+	var neighbouringID *KademliaID = kademliaID
 
-	if source[0] == 0 {
+	if kademliaID[0] == 0 {
 		neighbouringID[0] = 1
 	} else {
 		neighbouringID[0] = 0
 	}
 	for ok := true; ok; ok = flag {
 		resultKademliaID = NewRandomKademliaID()
-		if !(resultKademliaID.Equals(source)) || !(resultKademliaID.Equals(neighbouringID)) {
+		if !(resultKademliaID.Equals(kademliaID)) || !(resultKademliaID.Equals(neighbouringID)) {
 			ok = false
 		}
 	}

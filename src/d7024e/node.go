@@ -14,7 +14,7 @@ type Node struct {
 	kademlia *Kademlia
 }
 
-const alpha = 1 // Alpha value should probably be stored in a Kademlia related file
+const alpha =  35 // Alpha value should probably be stored in a Kademlia related file
 
 // NewNode Constructor function for Node class
 func NewNode(address string) *Node {
@@ -33,11 +33,12 @@ func NewNode(address string) *Node {
 func (node *Node) SpinupNode(target *Contact) {
 	serveMux := http.NewServeMux()
 	go node.net.Listen(node.contact.Address, serveMux)
+	time.Sleep(1 * time.Second)
 	for {
-		time.Sleep(1 * time.Second)
 		if target != nil {
 			fmt.Println("Contact found:", node.kademlia.LookupContact(target).Address)
 		}
+		time.Sleep(200000 * time.Second)
 	}
 }
 
@@ -58,4 +59,9 @@ func (node *Node) JoinNetwork(address string) {
 	node.net.SendPingMessage(address, kademliaID)
 	node.kademlia.LookupContact(node.contact)
 
+}
+
+// Rt returns the routing table of the node
+func (node *Node) Rt() *RoutingTable {
+	return node.rt
 }

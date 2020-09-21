@@ -66,3 +66,8 @@ func (routingTable *RoutingTable) getBucketIndex(id *KademliaID) int {
 	}
 	return IDLength*8 - 1
 }
+
+// Buckets returns the bucket of the routing table
+func (routingTable *RoutingTable) Buckets() [IDLength * 8]*bucket {
+	return routingTable.buckets
+}

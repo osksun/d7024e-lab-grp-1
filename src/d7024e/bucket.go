@@ -30,7 +30,7 @@ func (bucket *bucket) AddContact(contact Contact) {
 	}
 
 	if element == nil {
-		if bucket.list.Len() < bucketSize {
+		if bucket.list.Len() < bucketSize { // Probably wont be called since we don't want to call AddContact if the bucket is full
 			bucket.list.PushFront(contact)
 		}
 	} else {

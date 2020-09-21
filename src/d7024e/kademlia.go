@@ -5,9 +5,9 @@ import (
 )
 
 type Kademlia struct {
-    net		*Network
-    rt		*RoutingTable
-    alpha	int // also known as the alpha value that determines how many concurrent findclosestcontacts calls will exist
+	net   *Network
+	rt    *RoutingTable
+	alpha int
 }
 
 // NewKademlia Constructor function for Kademlia class

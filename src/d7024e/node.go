@@ -1,16 +1,16 @@
 package d7024e
 
 import (
+	"fmt"
 	"net/http"
 	"time"
-	"fmt"
 )
 
 type Node struct {
-	contact *Contact
-	rt *RoutingTable
-	vht *ValueHashtable
-	net *Network
+	contact  *Contact
+	rt       *RoutingTable
+	vht      *ValueHashtable
+	net      *Network
 	kademlia *Kademlia
 }
 
@@ -37,7 +37,7 @@ func (node *Node) SpinupNode(target *Contact) {
 		time.Sleep(1 * time.Second)
 		if target != nil {
 			fmt.Println("Contact found:", node.kademlia.LookupContact(target).Address)
-		}		
+		}
 	}
 }
 
@@ -49,4 +49,13 @@ func (node *Node) AddContact(contact *Contact) {
 // Contact returns the contact of the node
 func (node *Node) Contact() *Contact {
 	return node.contact
+}
+
+func (node *Node) JoinNetwork(address string) {
+	// TODO Check if node is participating or not
+	kademliaID := NewRandomKademliaID()
+	node.contact = NewContact(kademliaID, node.contact.Address)
+	node.net.SendPingMessage(address, kademliaID)
+	node.kademlia.LookupContact(node.contact)
+
 }

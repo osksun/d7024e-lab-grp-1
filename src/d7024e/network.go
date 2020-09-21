@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 )
 
 type Network struct {
@@ -19,12 +20,14 @@ type msg struct {
 	Hash    string
 	Data    []byte
 	Target  Contact
+	Sender  Contact
 }
 
 type response_msg struct {
 	Message     string
 	ContactList []Contact
 	Data        []byte
+	Responder   Contact
 }
 
 // NewNetwork Constructor function for Network class
@@ -41,7 +44,7 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 	var m msg
 	err := decoder.Decode(&m)
 	if err != nil {
-		log.Println("ERROR", err)
+		log.Println(err)
 	}
 	log.Println(m.Message)
 
@@ -75,10 +78,13 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 		mes = "Response: invalid message"
 	}
 
+	// adds contact to list
+	network.rt.AddContact(m.Sender)
 	rm := response_msg{
 		Message:     mes,
 		ContactList: cl,
 		Data:        d,
+		Responder:   *network.rt.me,
 	}
 
 	r, err := json.Marshal(rm)
@@ -86,12 +92,13 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 	fmt.Fprintf(rw, string(r))
 }
 
-func sendhelper(mes string, hash string, data []byte, target *Contact, address string) response_msg {
+func (network *Network) sendhelper(mes string, hash string, data []byte, target *Contact, address string) response_msg {
 	tm := msg{
 		Message: mes,
 		Hash:    hash,
 		Data:    data,
 		Target:  *target,
+		Sender:  *network.rt.me,
 	}
 	requestBody, err := json.Marshal(tm)
 	if err != nil {
@@ -119,6 +126,7 @@ func sendhelper(mes string, hash string, data []byte, target *Contact, address s
 		Message:     "error",
 		ContactList: nil,
 		Data:        nil,
+		Responder:   Contact{},
 	}
 	err1 := json.Unmarshal(body, &rm)
 	if err1 != nil {
@@ -134,29 +142,60 @@ func (network *Network) Listen(address string, serveMux *http.ServeMux) {
 	log.Fatal(http.ListenAndServe(address, serveMux))
 }
 
-func (network *Network) SendPingMessage(receiver *Contact) bool {
-	rm := sendhelper("ping", "", nil, nil, receiver.Address)
-	// locally set rm message (but yes kinda counterintuitive)
-	if rm.Message == "error" {
-		return false
-	} else {
-		return true
-	}
+func (network *Network) SendPingMessage(receiver *Contact, self *Contact) bool {
+	// TODO
+	c1 := make(chan response_msg, 1)
+
+	go func() {
+		rm := network.sendhelper("ping", "", nil, nil, receiver.Address)
+		c1 <- rm
+	}()
+
+	return network.VibeCheck(c1)
 }
 
 func (network *Network) SendFindContactMessage(target *Contact, receiver *Contact) []Contact {
-	rm := sendhelper("findcontact", "", nil, target, receiver.Address)
-	return rm.ContactList
+	// TODO
+
+	c1 := make(chan response_msg, 1)
+	var rm response_msg
+	go func() {
+		rm := network.sendhelper("findcontact", "", nil, target, receiver.Address)
+		c1 <- rm
+	}()
+
+	if network.VibeCheck(c1) {
+		return rm.ContactList
+	}
+	return nil
 }
 
 // Retrieves the data from the receiver node using the hash key
 func (network *Network) SendFindDataMessage(receiver *Contact, hash string) {
-	rm := sendhelper("finddata", hash, nil, nil, receiver.Address)
+	// TODO
+	rm := network.sendhelper("finddata", hash, nil, nil, receiver.Address)
 	log.Println(rm.Message)
 }
 
 // Tells the receiving node to store the data
 func (network *Network) SendStoreMessage(receiver *Contact, data []byte) {
-	rm := sendhelper("store", "", data, nil, receiver.Address)
+	// TODO
+	rm := network.sendhelper("store", "", data, nil, receiver.Address)
 	log.Println(rm.Message)
+}
+
+func (network *Network) VibeCheck(c1 chan response_msg) bool {
+	select {
+	case res := <-c1:
+		// Succeeds to get a response message
+		if res.Message != "error" {
+			network.rt.AddContact(res.Responder)
+			return true
+		}
+		return false
+	case <-time.After(3 * time.Second):
+		// Times out
+		fmt.Println("out of time, node is dead")
+		return false
+	}
 }

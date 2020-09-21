@@ -67,3 +67,23 @@ func (kademliaID KademliaID) CalcDistance(target *KademliaID) *KademliaID {
 func (kademliaID *KademliaID) String() string {
 	return hex.EncodeToString(kademliaID[0:IDLength])
 }
+
+// Returns an ID which is not itself or a neighbour
+func (kademliaID *KademliaID) IDwithinRange(source *KademliaID) *KademliaID {
+	var flag bool = true
+	var resultKademliaID *KademliaID
+	var neighbouringID *KademliaID = source
+
+	if resultKademliaID[0] == 0 {
+		neighbouringID[0] = 1
+	} else {
+		neighbouringID[0] = 0
+	}
+	for ok := true; ok; ok = flag {
+		resultKademliaID = NewRandomKademliaID()
+		if !(resultKademliaID.Equals(source)) || !(resultKademliaID.Equals(neighbouringID)) {
+			ok = false
+		}
+	}
+	return resultKademliaID
+}

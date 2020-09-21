@@ -74,7 +74,7 @@ func (kademliaID *KademliaID) IDwithinRange(source *KademliaID) *KademliaID {
 	var resultKademliaID *KademliaID
 	var neighbouringID *KademliaID = source
 
-	if resultKademliaID[0] == 0 {
+	if source[0] == 0 {
 		neighbouringID[0] = 1
 	} else {
 		neighbouringID[0] = 0

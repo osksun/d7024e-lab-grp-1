@@ -79,7 +79,8 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 	}
 
 	// adds contact to list
-	network.rt.AddContact(m.Sender)
+	network.NetAddCont(m.Sender)
+
 	rm := response_msg{
 		Message:     mes,
 		ContactList: cl,
@@ -145,18 +146,21 @@ func (network *Network) Listen(address string, serveMux *http.ServeMux) {
 func (network *Network) SendPingMessage(receiver *Contact) bool {
 	// TODO
 	c1 := make(chan response_msg, 1)
-
+	var rm response_msg
 	go func() {
 		rm := network.sendhelper("ping", "", nil, nil, receiver.Address)
 		c1 <- rm
 	}()
 
-	return network.VibeCheck(c1)
+	if network.VibeCheck(c1) {
+		network.NetAddCont(rm.Responder)
+		return true
+	}
+	return false
 }
 
 func (network *Network) SendFindContactMessage(target *Contact, receiver *Contact) []Contact {
 	// TODO
-
 	c1 := make(chan response_msg, 1)
 	var rm response_msg
 	go func() {
@@ -165,6 +169,7 @@ func (network *Network) SendFindContactMessage(target *Contact, receiver *Contac
 	}()
 
 	if network.VibeCheck(c1) {
+		network.NetAddCont(rm.Responder)
 		return rm.ContactList
 	}
 	return nil
@@ -189,7 +194,6 @@ func (network *Network) VibeCheck(c1 chan response_msg) bool {
 	case res := <-c1:
 		// Succeeds to get a response message
 		if res.Message != "error" {
-			network.rt.AddContact(res.Responder)
 			return true
 		}
 		return false
@@ -197,5 +201,19 @@ func (network *Network) VibeCheck(c1 chan response_msg) bool {
 		// Times out
 		fmt.Println("out of time, node is dead")
 		return false
+	}
+}
+
+func (network *Network) NetAddCont(contact Contact) {
+	// if bucket is full
+	if network.rt.buckets[network.rt.getBucketIndex(contact.ID)].Len() == bucketSize {
+		// get last in list
+		var last = network.rt.buckets[network.rt.getBucketIndex(contact.ID)].GetLast()
+		// if it's not alive then we add, else we don't
+		if !network.SendPingMessage(&last) {
+			network.rt.AddContact(contact)
+		}
+	} else {
+		network.rt.AddContact(contact)
 	}
 }

@@ -103,6 +103,7 @@ func (network *Network) sendhelper(mes string, hash string, data []byte, target 
 	}
 	requestBody, err := json.Marshal(tm)
 	if err != nil {
+		log
 		log.Fatalln(err)
 	}
 
@@ -170,8 +171,10 @@ func (network *Network) SendFindContactMessage(target *Contact, receiver *Contac
 
 	if network.VibeCheck(c1) {
 		network.NetAddCont(rm.Responder)
+		log.Println("returns the contact list")
 		return rm.ContactList
 	}
+	log.Println("returns nil")
 	return nil
 }
 
@@ -194,6 +197,7 @@ func (network *Network) VibeCheck(c1 chan response_msg) bool {
 	case res := <-c1:
 		// Succeeds to get a response message
 		if res.Message != "error" {
+			log.Println("Succeeds the vibecheck")
 			return true
 		}
 		return false

@@ -142,7 +142,7 @@ func (network *Network) Listen(address string, serveMux *http.ServeMux) {
 	log.Fatal(http.ListenAndServe(address, serveMux))
 }
 
-func (network *Network) SendPingMessage(receiver *Contact, self *Contact) bool {
+func (network *Network) SendPingMessage(receiver *Contact) bool {
 	// TODO
 	c1 := make(chan response_msg, 1)
 

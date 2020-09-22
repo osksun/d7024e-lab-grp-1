@@ -48,6 +48,9 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 	}
 	log.Println(m.Message)
 
+	// adds contact to list
+	network.NetAddCont(m.Sender)
+
 	var mes string
 	var cl []Contact = nil
 	var d []byte = nil
@@ -78,9 +81,6 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 		mes = "Response: invalid message"
 	}
 
-	// adds contact to list
-	network.NetAddCont(m.Sender)
-
 	rm := response_msg{
 		Message:     mes,
 		ContactList: cl,
@@ -103,7 +103,6 @@ func (network *Network) sendhelper(mes string, hash string, data []byte, target 
 	}
 	requestBody, err := json.Marshal(tm)
 	if err != nil {
-		log
 		log.Fatalln(err)
 	}
 

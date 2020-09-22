@@ -17,7 +17,7 @@ type Cli struct {
 func NewCli() *Cli {
 	cli := &Cli{}
 	cli.reader = bufio.NewReader(os.Stdin)
-	cli.cmds = []Cmd{Help(), Exit()}
+	cli.cmds = []Cmd{Help(), Exit()} // Add commands here
 	return cli
 }
 

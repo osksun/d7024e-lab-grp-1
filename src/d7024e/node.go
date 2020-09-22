@@ -34,12 +34,11 @@ func (node *Node) SpinupNode(target *Contact) {
 	serveMux := http.NewServeMux()
 	go node.net.Listen(node.contact.Address, serveMux)
 	time.Sleep(1 * time.Second)
-	for {
-		if target != nil {
-			fmt.Println("Contact found:", node.kademlia.LookupContact(target).Address)
-		}
-		time.Sleep(200000 * time.Second)
+	if target != nil {
+		fmt.Println("Contact found:", node.kademlia.LookupContact(target).Address)
 	}
+	//time.Sleep(2 * time.Second)
+
 }
 
 // AddContact adds an contact to the RoutingTable of the node

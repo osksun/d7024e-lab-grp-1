@@ -148,13 +148,15 @@ func (network *Network) Listen(address string, serveMux *http.ServeMux) {
 func (network *Network) SendPingMessage(receiver *Contact) bool {
 	// TODO
 	c1 := make(chan response_msg, 1)
-	var rm response_msg
+	c2 := make(chan response_msg, 1)
 	go func() {
 		rm := network.sendhelper("ping", "", nil, nil, receiver.Address)
 		c1 <- rm
+		c2 <- rm
 	}()
 
 	if network.VibeCheck(c1) {
+		rm := <-c2
 		network.NetAddCont(rm.Responder)
 		return true
 	}
@@ -174,10 +176,8 @@ func (network *Network) SendFindContactMessage(target *Contact, receiver *Contac
 	if network.VibeCheck(c1) {
 		rm := <-c2
 		network.NetAddCont(rm.Responder)
-		log.Println("returns the contact list")
 		return rm.ContactList
 	}
-	log.Println("returns nil")
 	return nil
 }
 

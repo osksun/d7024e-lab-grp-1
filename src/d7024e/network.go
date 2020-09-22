@@ -133,6 +133,8 @@ func (network *Network) sendhelper(mes string, hash string, data []byte, target 
 	if err1 != nil {
 		log.Println(err1)
 	}
+	log.Println("here is the rm response:")
+	log.Println(rm)
 	return rm
 }
 
@@ -162,13 +164,15 @@ func (network *Network) SendPingMessage(receiver *Contact) bool {
 func (network *Network) SendFindContactMessage(target *Contact, receiver *Contact) []Contact {
 	// TODO
 	c1 := make(chan response_msg, 1)
-	var rm response_msg
+	c2 := make(chan response_msg, 1)
 	go func() {
 		rm := network.sendhelper("findcontact", "", nil, target, receiver.Address)
 		c1 <- rm
+		c2 <- rm
 	}()
 
 	if network.VibeCheck(c1) {
+		rm := <-c2
 		network.NetAddCont(rm.Responder)
 		log.Println("returns the contact list")
 		return rm.ContactList

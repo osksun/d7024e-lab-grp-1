@@ -48,9 +48,6 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 	}
 	log.Println(m.Message)
 
-	// adds contact to list
-	network.NetAddCont(m.Sender)
-
 	var mes string
 	var cl []Contact = nil
 	var d []byte = nil
@@ -89,6 +86,9 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 	}
 
 	r, err := json.Marshal(rm)
+
+	// adds RPC sender to list
+	network.NetAddCont(m.Sender)
 
 	fmt.Fprintf(rw, string(r))
 }
@@ -148,14 +148,16 @@ func (network *Network) Listen(address string, serveMux *http.ServeMux) {
 func (network *Network) SendPingMessage(receiver *Contact) bool {
 	// TODO
 	c1 := make(chan response_msg, 1)
-	var rm response_msg
+	c2 := make(chan response_msg, 1)
 	go func() {
 		rm := network.sendhelper("ping", "", nil, nil, receiver.Address)
 		c1 <- rm
+		c2 <- rm
 	}()
 
 	if network.VibeCheck(c1) {
-		network.NetAddCont(rm.Responder)
+		//rm := <-c2
+		//network.NetAddCont(rm.Responder)
 		return true
 	}
 	return false
@@ -174,10 +176,8 @@ func (network *Network) SendFindContactMessage(target *Contact, receiver *Contac
 	if network.VibeCheck(c1) {
 		rm := <-c2
 		network.NetAddCont(rm.Responder)
-		log.Println("returns the contact list")
 		return rm.ContactList
 	}
-	log.Println("returns nil")
 	return nil
 }
 
@@ -199,7 +199,7 @@ func (network *Network) VibeCheck(c1 chan response_msg) bool {
 	select {
 	case res := <-c1:
 		// Succeeds to get a response message
-		if res.Message != "error" {
+		if res.Message != "error" || res.Message == "" {
 			log.Println("Succeeds the vibecheck")
 			return true
 		}

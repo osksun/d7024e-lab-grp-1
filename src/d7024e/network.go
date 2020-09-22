@@ -48,9 +48,6 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 	}
 	log.Println(m.Message)
 
-	// adds contact to list
-	network.NetAddCont(m.Sender)
-
 	var mes string
 	var cl []Contact = nil
 	var d []byte = nil
@@ -89,6 +86,9 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 	}
 
 	r, err := json.Marshal(rm)
+
+	// adds RPC sender to list
+	network.NetAddCont(m.Sender)
 
 	fmt.Fprintf(rw, string(r))
 }
@@ -156,8 +156,8 @@ func (network *Network) SendPingMessage(receiver *Contact) bool {
 	}()
 
 	if network.VibeCheck(c1) {
-		rm := <-c2
-		network.NetAddCont(rm.Responder)
+		//rm := <-c2
+		//network.NetAddCont(rm.Responder)
 		return true
 	}
 	return false

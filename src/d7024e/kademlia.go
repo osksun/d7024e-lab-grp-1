@@ -34,10 +34,10 @@ func (kademlia *Kademlia) LookupContact(target *Contact) Contact {
 	var candidateList ContactCandidates
 	//var ContactedList []Contact
 	initiatorList = kademlia.rt.FindClosestContacts(target.ID, kademlia.alpha)
-	for i := 0; i < kademlia.alpha; i++ {
+	for i := 0; i < MinInt(kademlia.alpha, len(initiatorList)); i++ {
 		go kademlia.goFindNode(target, &initiatorList[i], c1)
 	}
-	for i := 0; i < kademlia.alpha; i++ {
+	for i := 0; i < MinInt(kademlia.alpha, len(initiatorList)); i++ {
 		candidateList.Append(<-c1)
 	}
 	candidateList.Sort()
@@ -96,4 +96,16 @@ func (kademlia *Kademlia) EqualKademliaID(contactList []Contact, contact *Contac
 		}
 	}
 	return false
+}
+
+func MinInt(vars ...int) int {
+	min := vars[0]
+
+	for _, i := range vars {
+		if min > i {
+			min = i
+		}
+	}
+
+	return min
 }

@@ -19,11 +19,18 @@ func main() {
 	node4 := d7024e.NewNode("localhost:8003")
 
 	node1.AddContact(node2.Contact())
-	node2.AddContact(node1.Contact())
+	node1.AddContact(node3.Contact())
 	node2.AddContact(node3.Contact())
-	//node3.SpinupNode(nil)
 
-	node4.JoinNetwork("localhost:8001")
+	node1.SpinupNode(nil)
+	node2.SpinupNode(nil)
+	node3.SpinupNode(nil)
+	node4.SpinupNode(nil)
+
+	// Fake bucket insertion
+	node1.AddContact(node4.Contact())
+	node4.AddContact(node1.Contact())
+	node4.JoinNetwork("localhost:8000")
 	/*
 		const nNodes = 50
 		var nodes [nNodes]*d7024e.Node

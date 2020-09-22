@@ -30,7 +30,7 @@ func (bucket *bucket) AddContact(contact Contact) {
 	}
 
 	if element == nil {
-		if bucket.list.Len() < bucketSize { // Probably wont be called since we don't want to call AddContact if the bucket is full
+		if bucket.list.Len() < bucketSize {
 			bucket.list.PushFront(contact)
 		}
 	} else {
@@ -38,7 +38,7 @@ func (bucket *bucket) AddContact(contact Contact) {
 	}
 }
 
-// GetContactAndCalcDistance returns an array of Contacts where 
+// GetContactAndCalcDistance returns an array of Contacts where
 // the distance has already been calculated
 func (bucket *bucket) GetContactAndCalcDistance(target *KademliaID) []Contact {
 	var contacts []Contact
@@ -55,4 +55,10 @@ func (bucket *bucket) GetContactAndCalcDistance(target *KademliaID) []Contact {
 // Len return the size of the bucket
 func (bucket *bucket) Len() int {
 	return bucket.list.Len()
+}
+
+func (bucket *bucket) GetLast() Contact {
+	var contact Contact
+	contact = bucket.list.Back().Value.(Contact)
+	return contact
 }

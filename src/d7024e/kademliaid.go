@@ -53,6 +53,11 @@ func (kademliaID KademliaID) Equals(otherKademliaID *KademliaID) bool {
 	return true
 }
 
+// EqualsZero returns true if kademliaID is zero
+func (kademliaID KademliaID) EqualsZero() bool {
+	return kademliaID.Equals(NewKademliaID("0000000000000000000000000000000000000000"))
+}
+
 // CalcDistance returns a new instance of a KademliaID that is built
 // through a bitwise XOR operation betweeen kademliaID and target
 func (kademliaID KademliaID) CalcDistance(target *KademliaID) *KademliaID {

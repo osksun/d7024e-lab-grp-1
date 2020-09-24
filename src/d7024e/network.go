@@ -59,8 +59,6 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 		// find contact handle
 		mes = "findcontact response"
 		cl = network.rt.FindClosestContacts(m.Target.ID, bucketSize) // K = 20 here
-		log.Print("Here is a cl[0] distance")
-		log.Print(cl[0].distance)
 	case "finddata":
 		// find data handle
 		d = network.ht.Get(m.Hash)

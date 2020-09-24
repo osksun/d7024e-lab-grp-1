@@ -19,7 +19,7 @@ import (
 
 // ValueHashtable the set of Items
 type ValueHashtable struct {
-	items map[int][]byte
+	items map[[20]byte][]byte
 	lock  sync.RWMutex
 }
 

@@ -54,7 +54,7 @@ func (kademlia *Kademlia) Store(data []byte) {
 }
 
 func (kademlia *Kademlia) goFindNode(target *Contact, contact *Contact, channel chan []Contact) {
-	var queriedList []Contact
+	queriedList := []Contact{*kademlia.rt.me}
 	var requestList ContactCandidates
 	var resultList = kademlia.net.SendFindContactMessage(target, contact)
 	var flag = true

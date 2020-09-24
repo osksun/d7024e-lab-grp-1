@@ -16,7 +16,7 @@ func leftPad(str string, pad rune, lenght int) string {
 func main() {
 	// Create nodes
 	node1 := d7024e.NewNode("localhost:8000")
-	//node2 := d7024e.NewNode("localhost:8001")
+	node2 := d7024e.NewNode("localhost:8001")
 	//node3 := d7024e.NewNode("localhost:8002")
 	node4 := d7024e.NewNode("localhost:8003")
 
@@ -25,7 +25,7 @@ func main() {
 	node4.AddContact(node1.Contact())
 
 	node1.SpinupNode(nil)
-	//node2.SpinupNode(nil)
+	node2.SpinupNode(nil)
 	//node3.SpinupNode(nil)
 	node4.SpinupNode(nil)
 
@@ -36,7 +36,7 @@ func main() {
 	}
 	fmt.Println("node4 connections before: ", nConnections)
 	// Fake bucket insertion
-	//node1.AddContact(node4.Contact())
+	node1.AddContact(node2.Contact())
 	node4.JoinNetwork("localhost:8000")
 
 	nConnections = 0

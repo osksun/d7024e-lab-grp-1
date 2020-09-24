@@ -14,7 +14,7 @@ type Node struct {
 	kademlia *Kademlia
 }
 
-const alpha = 35 // Alpha value should probably be stored in a Kademlia related file
+const alpha = 3 // Alpha value should probably be stored in a Kademlia related file
 
 // NewNode Constructor function for Node class
 func NewNode(address string) *Node {
@@ -63,9 +63,15 @@ func (node *Node) JoinNetwork(address string) {
 	for i := 0; i < len(nodeBuckets); i++ {
 		nConnections += nodeBuckets[i].Len()
 	}
-	fmt.Println("Connections after first lookup: ", nConnections)
+	fmt.Println("Connections after 1st lookup: ", nConnections)
 	refreshContact.ID = node.contact.ID.IDwithinRange()
 	node.kademlia.LookupContact(&refreshContact)
+
+	nConnections = 0
+	for i := 0; i < len(nodeBuckets); i++ {
+		nConnections += nodeBuckets[i].Len()
+	}
+	fmt.Println("Connections after 2nd lookup: ", nConnections)
 
 }
 

@@ -74,15 +74,15 @@ func (kademlia *Kademlia) goFindNode(target *Contact, contact *Contact, channel 
 				if !kademlia.EqualKademliaID(queriedList, &resultList[i]) {
 					queriedList = append(queriedList, resultList[i])
 					currentResponseList := kademlia.net.SendFindContactMessage(target, &resultList[i])
-					if currentResponseList[0].Distance.EqualsZero() {
-						// write to channel return
-					}
 					requestList.Append(currentResponseList)
+					if currentResponseList[0].Distance.EqualsZero() {
+						flag = false
+						break
+					}
 				}
 			}
-			requestList.Sort()
-
 			if requestList.contacts != nil {
+				requestList.Sort()
 				closestCandidate := requestList.GetContacts(1)[0]
 				if !(closestCandidate.Less(&resultList[0])) {
 					flag = false

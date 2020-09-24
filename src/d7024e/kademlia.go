@@ -22,7 +22,7 @@ func NewKademlia(net *Network, rt *RoutingTable, alpha int) *Kademlia {
 
 func printContacts(contacts []Contact) {
 	for i, contact := range contacts {
-		fmt.Println(i, contact.String(), "distance:", contact.distance)
+		fmt.Println(i, contact.String(), "distance:", contact.Distance)
 	}
 }
 

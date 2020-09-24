@@ -14,7 +14,7 @@ type Node struct {
 	kademlia *Kademlia
 }
 
-const alpha = 3 // Alpha value should probably be stored in a Kademlia related file
+const alpha = 1 // Alpha value should probably be stored in a Kademlia related file
 
 // NewNode Constructor function for Node class
 func NewNode(address string) *Node {

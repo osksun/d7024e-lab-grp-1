@@ -61,7 +61,7 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 		// find contact handle
 		log.Println("server findcontact")
 		mes = "findcontact response"
-		cl = network.rt.FindClosestContacts(m.Target.ID, 20) // K = 20 here
+		cl = network.rt.FindClosestContacts(m.Target.ID, bucketSize) // K = 20 here
 	case "finddata":
 		// find data handle
 		log.Println("server finddata")
@@ -133,7 +133,7 @@ func (network *Network) sendhelper(mes string, hash string, data []byte, target 
 	if err1 != nil {
 		log.Println(err1)
 	}
-	log.Println("here is the rm response:")
+	log.Println("here is the rm response20:")
 	log.Println(rm)
 	return rm
 }
@@ -176,6 +176,9 @@ func (network *Network) SendFindContactMessage(target *Contact, receiver *Contac
 	if network.VibeCheck(c1) {
 		rm := <-c2
 		network.NetAddCont(rm.Responder)
+		if rm.ContactList == nil {
+			log.Println("Error: node has no contacts and returns nil")
+		}
 		return rm.ContactList
 	}
 	return nil
@@ -218,9 +221,20 @@ func (network *Network) NetAddCont(contact Contact) {
 		var last = network.rt.buckets[network.rt.getBucketIndex(contact.ID)].GetLast()
 		// if it's not alive then we add, else we don't
 		if !network.SendPingMessage(&last) {
-			network.rt.AddContact(contact)
+			if !network.CheckSame(contact, *network.rt.me) {
+				network.rt.AddContact(contact)
+			}
 		}
 	} else {
-		network.rt.AddContact(contact)
+		if !network.CheckSame(contact, *network.rt.me) {
+			network.rt.AddContact(contact)
+		}
 	}
+}
+
+func (network *Network) CheckSame(contact1 Contact, contact2 Contact) bool {
+	if contact1.ID == contact2.ID {
+		return true
+	}
+	return false
 }

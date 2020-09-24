@@ -98,8 +98,10 @@ func (network *Network) sendhelper(mes string, hash []byte, data []byte, target 
 		Message: mes,
 		Hash:    hash,
 		Data:    data,
-		Target:  *target,
 		Sender:  *network.rt.me,
+	}
+	if (target != nil) {
+		tm.Target = *target
 	}
 	requestBody, err := json.Marshal(tm)
 	if err != nil {

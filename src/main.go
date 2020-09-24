@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"./d7024e"
 )
 
@@ -14,23 +16,35 @@ func leftPad(str string, pad rune, lenght int) string {
 func main() {
 	// Create nodes
 	node1 := d7024e.NewNode("localhost:8000")
-	node2 := d7024e.NewNode("localhost:8001")
-	node3 := d7024e.NewNode("localhost:8002")
+	//node2 := d7024e.NewNode("localhost:8001")
+	//node3 := d7024e.NewNode("localhost:8002")
 	node4 := d7024e.NewNode("localhost:8003")
 
-	node1.AddContact(node2.Contact())
-	node1.AddContact(node3.Contact())
-	node2.AddContact(node3.Contact())
+	//node1.AddContact(node2.Contact())
+	//node1.AddContact(node3.Contact())
+	node4.AddContact(node1.Contact())
 
 	node1.SpinupNode(nil)
-	node2.SpinupNode(nil)
-	node3.SpinupNode(nil)
+	//node2.SpinupNode(nil)
+	//node3.SpinupNode(nil)
 	node4.SpinupNode(nil)
 
+	var n4Buckets = node4.Rt().Buckets()
+	nConnections := 0
+	for i := 0; i < len(n4Buckets); i++ {
+		nConnections += n4Buckets[i].Len()
+	}
+	fmt.Println("node4 connections before: ", nConnections)
 	// Fake bucket insertion
-	node1.AddContact(node4.Contact())
-	node4.AddContact(node1.Contact())
+	//node1.AddContact(node4.Contact())
 	node4.JoinNetwork("localhost:8000")
+
+	nConnections = 0
+	for i := 0; i < len(n4Buckets); i++ {
+		nConnections += n4Buckets[i].Len()
+	}
+	fmt.Println("node4 connections after: ", nConnections)
+
 	/*
 		const nNodes = 50
 		var nodes [nNodes]*d7024e.Node

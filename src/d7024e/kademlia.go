@@ -34,15 +34,25 @@ func (kademlia *Kademlia) LookupContact(target *Contact) Contact {
 	var candidateList ContactCandidates
 	//var ContactedList []Contact
 	initiatorList = kademlia.rt.FindClosestContacts(target.ID, kademlia.alpha)
-	for i := 0; i < MinInt(kademlia.alpha, len(initiatorList)); i++ {
-		go kademlia.goFindNode(target, &initiatorList[i], c1)
+	var closestContact Contact
+	if initiatorList[0].Distance.EqualsZero() {
+		closestContact = initiatorList[0]
+	} else {
+		for i := 0; i < MinInt(kademlia.alpha, len(initiatorList)); i++ {
+			go kademlia.goFindNode(target, &initiatorList[i], c1)
+		}
+		for i := 0; i < MinInt(kademlia.alpha, len(initiatorList)); i++ {
+			newCandidates := <-c1
+			candidateList.Append(newCandidates)
+			if newCandidates[0].Distance.EqualsZero() {
+				break
+			}
+		}
+		candidateList.Sort()
+		closestContact = candidateList.GetContacts(1)[0]
 	}
-	for i := 0; i < MinInt(kademlia.alpha, len(initiatorList)); i++ {
-		candidateList.Append(<-c1)
-	}
-	candidateList.Sort()
 	fmt.Println("Lookup took", time.Since(start))
-	return candidateList.GetContacts(1)[0]
+	return closestContact
 }
 
 func (kademlia *Kademlia) LookupData(hash string) {
@@ -57,32 +67,31 @@ func (kademlia *Kademlia) goFindNode(target *Contact, contact *Contact, channel 
 	queriedList := []Contact{*kademlia.rt.me}
 	var requestList ContactCandidates
 	var resultList = kademlia.net.SendFindContactMessage(target, contact)
-	var flag = true
-	for ok := true; ok; ok = flag {
-		for i := 0; i < len(resultList); i++ {
-			if !kademlia.EqualKademliaID(queriedList, &resultList[i]) {
-				queriedList = append(queriedList, resultList[i])
-				requestList.Append(kademlia.net.SendFindContactMessage(target, &resultList[i]))
+	if !resultList[0].Distance.EqualsZero() {
+		var flag = true
+		for ok := true; ok; ok = flag {
+			for i := 0; i < len(resultList); i++ {
+				if !kademlia.EqualKademliaID(queriedList, &resultList[i]) {
+					queriedList = append(queriedList, resultList[i])
+					currentResponseList := kademlia.net.SendFindContactMessage(target, &resultList[i])
+					if currentResponseList[0].Distance.EqualsZero() {
+						// write to channel return
+					}
+					requestList.Append(currentResponseList)
+				}
 			}
-		}
-		for i := 0; i < requestList.Len(); i++ {
-			requestList.contacts[i].CalcDistance(target.ID)
-		}
-		requestList.Sort()
-		var tempCon Contact
-		for i := 0; i < len(resultList); i++ {
-			resultList[i].CalcDistance(target.ID)
-		}
-		if requestList.contacts != nil {
-			tempCon = requestList.GetContacts(1)[0]
-			tempCon.CalcDistance(target.ID)
-			if !(tempCon.Less(&resultList[0])) {
-				flag = false
+			requestList.Sort()
+
+			if requestList.contacts != nil {
+				closestCandidate := requestList.GetContacts(1)[0]
+				if !(closestCandidate.Less(&resultList[0])) {
+					flag = false
+				} else {
+					resultList = requestList.GetContacts(requestList.Len())
+				}
 			} else {
-				resultList = requestList.GetContacts(requestList.Len())
+				flag = false
 			}
-		} else {
-			flag = false
 		}
 	}
 	channel <- resultList

@@ -46,11 +46,6 @@ func (node *Node) AddContact(contact *Contact) {
 	node.rt.AddContact(*contact)
 }
 
-// Contact returns the contact of the node
-func (node *Node) Contact() *Contact {
-	return node.contact
-}
-
 func (node *Node) JoinNetwork(address string) {
 	// TODO Check if node is participating or not
 	var refreshContact Contact // dummy contact only used for looking up random ID
@@ -69,7 +64,17 @@ func (node *Node) JoinNetwork(address string) {
 
 }
 
+// Contact returns the contact of the node
+func (node *Node) Contact() *Contact {
+	return node.contact
+}
+
 // Rt returns the routing table of the node
 func (node *Node) Rt() *RoutingTable {
 	return node.rt
+}
+
+// Vht returns the routing table of the node
+func (node *Node) Vht() *ValueHashtable {
+	return node.vht
 }

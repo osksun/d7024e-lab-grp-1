@@ -13,3 +13,4 @@
 
 # Text editor VS Code
 *.vscode/
+src/__debug_bin

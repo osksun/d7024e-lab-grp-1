@@ -157,7 +157,7 @@ func (network *Network) SendPingMessage(receiver *Contact) bool {
 
 	if network.VibeCheck(c1) {
 		rm := <-c2
-		network.NetAddCont(rm.Responder)
+		network.rt.AddContact(rm.Responder)
 		return true
 	}
 	return false
@@ -207,7 +207,7 @@ func (network *Network) VibeCheck(c1 chan response_msg) bool {
 			return true
 		}
 		return false
-	case <-time.After(3 * time.Second):
+	case <-time.After(time.Second):
 		// Times out
 		fmt.Println("out of time, node is dead")
 		return false

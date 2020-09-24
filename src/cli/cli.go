@@ -5,19 +5,22 @@ import (
 	"os"
 	"fmt"
 	"strings"
+	"../d7024e"
 )
 
 // Cli struct containing bufio reader and list of commands
 type Cli struct {
 	reader *bufio.Reader
 	cmds []Cmd
+	node *d7024e.Node
 }
 
 // NewCli Constructor function for Cli class
-func NewCli() *Cli {
+func NewCli(node *d7024e.Node) *Cli {
 	cli := &Cli{}
 	cli.reader = bufio.NewReader(os.Stdin)
-	cli.cmds = []Cmd{Help(), Exit()} // Add commands here
+	cli.cmds = []Cmd{Help(), Put(), Exit()} // Add commands here
+	cli.node = node
 	return cli
 }
 

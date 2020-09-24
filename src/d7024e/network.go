@@ -17,7 +17,7 @@ type Network struct {
 
 type msg struct {
 	Message string
-	Hash    string
+	Hash    []byte
 	Data    []byte
 	Target  Contact
 	Sender  Contact
@@ -71,7 +71,7 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 		// store handle
 		log.Println("server store")
 		// PUT NEEDS A STRING KEY ASSOCIATED WITH THE DATA
-		network.ht.Put("keyHERE", m.Data)
+		network.ht.Put([]byte("keyHERE"), m.Data)
 		mes = "Response from store"
 	default:
 		log.Println("server received an invalid message")
@@ -93,7 +93,7 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 	fmt.Fprintf(rw, string(r))
 }
 
-func (network *Network) sendhelper(mes string, hash string, data []byte, target *Contact, address string) response_msg {
+func (network *Network) sendhelper(mes string, hash []byte, data []byte, target *Contact, address string) response_msg {
 	tm := msg{
 		Message: mes,
 		Hash:    hash,
@@ -150,7 +150,7 @@ func (network *Network) SendPingMessage(receiver *Contact) bool {
 	c1 := make(chan response_msg, 1)
 	c2 := make(chan response_msg, 1)
 	go func() {
-		rm := network.sendhelper("ping", "", nil, nil, receiver.Address)
+		rm := network.sendhelper("ping", nil, nil, nil, receiver.Address)
 		c1 <- rm
 		c2 <- rm
 	}()
@@ -168,7 +168,7 @@ func (network *Network) SendFindContactMessage(target *Contact, receiver *Contac
 	c1 := make(chan response_msg, 1)
 	c2 := make(chan response_msg, 1)
 	go func() {
-		rm := network.sendhelper("findcontact", "", nil, target, receiver.Address)
+		rm := network.sendhelper("findcontact", nil, nil, target, receiver.Address)
 		c1 <- rm
 		c2 <- rm
 	}()
@@ -185,7 +185,7 @@ func (network *Network) SendFindContactMessage(target *Contact, receiver *Contac
 }
 
 // Retrieves the data from the receiver node using the hash key
-func (network *Network) SendFindDataMessage(receiver *Contact, hash string) {
+func (network *Network) SendFindDataMessage(receiver *Contact, hash []byte) {
 	// TODO
 	rm := network.sendhelper("finddata", hash, nil, nil, receiver.Address)
 	log.Println(rm.Message)
@@ -194,7 +194,7 @@ func (network *Network) SendFindDataMessage(receiver *Contact, hash string) {
 // Tells the receiving node to store the data
 func (network *Network) SendStoreMessage(receiver *Contact, data []byte) {
 	// TODO
-	rm := network.sendhelper("store", "", data, nil, receiver.Address)
+	rm := network.sendhelper("store", nil, data, nil, receiver.Address)
 	log.Println(rm.Message)
 }
 

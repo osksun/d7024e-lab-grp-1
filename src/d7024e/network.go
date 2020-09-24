@@ -156,8 +156,8 @@ func (network *Network) SendPingMessage(receiver *Contact) bool {
 	}()
 
 	if network.VibeCheck(c1) {
-		//rm := <-c2
-		//network.NetAddCont(rm.Responder)
+		rm := <-c2
+		network.NetAddCont(rm.Responder)
 		return true
 	}
 	return false

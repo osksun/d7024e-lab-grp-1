@@ -156,8 +156,8 @@ func (network *Network) SendPingMessage(receiver *Contact) bool {
 	}()
 
 	if network.VibeCheck(c1) {
-		rm := <-c2
-		network.rt.AddContact(rm.Responder)
+		//rm := <-c2
+		//network.rt.AddContact(rm.Responder)
 		return true
 	}
 	return false
@@ -224,6 +224,8 @@ func (network *Network) NetAddCont(contact Contact) {
 			if !network.CheckSame(contact, *network.rt.me) {
 				network.rt.AddContact(contact)
 			}
+		} else {
+			network.rt.AddContact(last)
 		}
 	} else {
 		if !network.CheckSame(contact, *network.rt.me) {

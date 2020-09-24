@@ -88,9 +88,11 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 	}
 
 	r, err := json.Marshal(rm)
-
+	if err != nil {
+		log.Print(err)
+	}
 	// adds RPC sender to list
-	go func() { network.NetAddCont(m.Sender) }()
+	go network.NetAddCont(m.Sender)
 
 	fmt.Fprintf(rw, string(r))
 }
@@ -179,7 +181,7 @@ func (network *Network) SendFindContactMessage(target *Contact, receiver *Contac
 
 	if network.VibeCheck(c1) {
 		rm := <-c2
-		go func() { network.NetAddCont(rm.Responder) }()
+		go network.NetAddCont(rm.Responder)
 		if rm.ContactList == nil {
 			log.Println("Error: node has no contacts and returns nil")
 		}

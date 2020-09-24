@@ -88,7 +88,7 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 	r, err := json.Marshal(rm)
 
 	// adds RPC sender to list
-	network.NetAddCont(m.Sender)
+	go func() { network.NetAddCont(m.Sender) }()
 
 	fmt.Fprintf(rw, string(r))
 }
@@ -100,7 +100,7 @@ func (network *Network) sendhelper(mes string, hash []byte, data []byte, target 
 		Data:    data,
 		Sender:  *network.rt.me,
 	}
-	if (target != nil) {
+	if target != nil {
 		tm.Target = *target
 	}
 	requestBody, err := json.Marshal(tm)

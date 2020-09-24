@@ -46,7 +46,6 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 	if err != nil {
 		log.Println(err)
 	}
-	log.Println(m.Message)
 
 	var mes string
 	var cl []Contact = nil
@@ -55,23 +54,19 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 	switch m.Message {
 	case "ping":
 		// ping handle
-		log.Println("server ping")
 		mes = "Response from ping"
 	case "findcontact":
 		// find contact handle
-		log.Println("server findcontact")
 		mes = "findcontact response"
 		cl = network.rt.FindClosestContacts(m.Target.ID, bucketSize) // K = 20 here
 		log.Print("Here is a cl[0] distance")
 		log.Print(cl[0].distance)
 	case "finddata":
 		// find data handle
-		log.Println("server finddata")
 		d = network.ht.Get(m.Hash)
 		mes = "Response from finddata"
 	case "store":
 		// store handle
-		log.Println("server store")
 		// PUT NEEDS A STRING KEY ASSOCIATED WITH THE DATA
 		network.ht.Put(m.Hash, m.Data)
 		mes = "Response from store"
@@ -91,7 +86,6 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 
 	// adds RPC sender to list
 	go func() { network.NetAddCont(m.Sender) }()
-
 	fmt.Fprintf(rw, string(r))
 }
 
@@ -110,13 +104,11 @@ func (network *Network) sendhelper(mes string, hash []byte, data []byte, target 
 		log.Fatalln(err)
 	}
 
-	fmt.Println("sending ... ")
 	resp, err := http.Post("http://"+address+"/msg", "message", bytes.NewBuffer(requestBody))
 	if err != nil {
 		log.Fatalln(err)
 		// maybe ping fail should be here
 	}
-	log.Println(resp)
 
 	defer resp.Body.Close()
 
@@ -126,7 +118,6 @@ func (network *Network) sendhelper(mes string, hash []byte, data []byte, target 
 	}
 
 	// Unmarshals
-	log.Println(string(body))
 	var rm = response_msg{
 		Message:     "error",
 		ContactList: nil,
@@ -137,8 +128,6 @@ func (network *Network) sendhelper(mes string, hash []byte, data []byte, target 
 	if err1 != nil {
 		log.Println(err1)
 	}
-	log.Println("here is the rm response20:")
-	log.Println(rm)
 	return rm
 }
 
@@ -207,11 +196,10 @@ func (network *Network) VibeCheck(c1 chan response_msg) bool {
 	case res := <-c1:
 		// Succeeds to get a response message
 		if res.Message != "error" || res.Message == "" {
-			log.Println("Succeeds the vibecheck")
 			return true
 		}
 		return false
-	case <-time.After(time.Second):
+	case <-time.After(3 * time.Second):
 		// Times out
 		fmt.Println("out of time, node is dead")
 		return false

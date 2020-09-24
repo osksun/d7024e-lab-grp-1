@@ -5,5 +5,7 @@ import (
 
 // Get command for the cli
 func Get() Cmd{
-	// TODO
+	return Cmd{
+		// TODO
+	}
 }

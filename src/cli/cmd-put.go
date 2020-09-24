@@ -11,7 +11,7 @@ func Put() Cmd{
 	return Cmd{
 		triggers: []string{"put", "p"},
 		description: "Upload content",
-		usage: "\"put CONTENT HERE\", \"p CONTENT HERE\"",
+		usage: "\"put filename content...\", \"p filename content...\"",
 		action: func(cli *Cli, args ...string) {
 			filename := args[0]
 			content := []byte(strings.Join(args[1:len(args)], " "))

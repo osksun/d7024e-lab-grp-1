@@ -46,7 +46,6 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 	if err != nil {
 		log.Println(err)
 	}
-	log.Println(m.Message)
 
 	var mes string
 	var cl []Contact = nil
@@ -55,23 +54,19 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 	switch m.Message {
 	case "ping":
 		// ping handle
-		log.Println("server ping")
 		mes = "Response from ping"
 	case "findcontact":
 		// find contact handle
-		log.Println("server findcontact")
 		mes = "findcontact response"
 		cl = network.rt.FindClosestContacts(m.Target.ID, bucketSize) // K = 20 here
 	case "finddata":
 		// find data handle
-		log.Println("server finddata")
 		d = network.ht.Get(m.Hash)
 		mes = "Response from finddata"
 	case "store":
 		// store handle
-		log.Println("server store")
 		// PUT NEEDS A STRING KEY ASSOCIATED WITH THE DATA
-		network.ht.Put([]byte("keyHERE"), m.Data)
+		network.ht.Put(m.Hash, m.Data)
 		mes = "Response from store"
 	default:
 		log.Println("server received an invalid message")
@@ -88,8 +83,7 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 	r, err := json.Marshal(rm)
 
 	// adds RPC sender to list
-	network.NetAddCont(m.Sender)
-
+	go func() { network.NetAddCont(m.Sender) }()
 	fmt.Fprintf(rw, string(r))
 }
 
@@ -98,21 +92,21 @@ func (network *Network) sendhelper(mes string, hash []byte, data []byte, target 
 		Message: mes,
 		Hash:    hash,
 		Data:    data,
-		Target:  *target,
 		Sender:  *network.rt.me,
+	}
+	if target != nil {
+		tm.Target = *target
 	}
 	requestBody, err := json.Marshal(tm)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	fmt.Println("sending ... ")
 	resp, err := http.Post("http://"+address+"/msg", "message", bytes.NewBuffer(requestBody))
 	if err != nil {
 		log.Fatalln(err)
 		// maybe ping fail should be here
 	}
-	log.Println(resp)
 
 	defer resp.Body.Close()
 
@@ -122,7 +116,6 @@ func (network *Network) sendhelper(mes string, hash []byte, data []byte, target 
 	}
 
 	// Unmarshals
-	log.Println(string(body))
 	var rm = response_msg{
 		Message:     "error",
 		ContactList: nil,
@@ -133,8 +126,6 @@ func (network *Network) sendhelper(mes string, hash []byte, data []byte, target 
 	if err1 != nil {
 		log.Println(err1)
 	}
-	log.Println("here is the rm response20:")
-	log.Println(rm)
 	return rm
 }
 
@@ -157,7 +148,7 @@ func (network *Network) SendPingMessage(receiver *Contact) bool {
 
 	if network.VibeCheck(c1) {
 		//rm := <-c2
-		//network.NetAddCont(rm.Responder)
+		//network.rt.AddContact(rm.Responder)
 		return true
 	}
 	return false
@@ -175,7 +166,7 @@ func (network *Network) SendFindContactMessage(target *Contact, receiver *Contac
 
 	if network.VibeCheck(c1) {
 		rm := <-c2
-		network.NetAddCont(rm.Responder)
+		go func() { network.NetAddCont(rm.Responder) }()
 		if rm.ContactList == nil {
 			log.Println("Error: node has no contacts and returns nil")
 		}
@@ -203,7 +194,6 @@ func (network *Network) VibeCheck(c1 chan response_msg) bool {
 	case res := <-c1:
 		// Succeeds to get a response message
 		if res.Message != "error" || res.Message == "" {
-			log.Println("Succeeds the vibecheck")
 			return true
 		}
 		return false
@@ -221,20 +211,15 @@ func (network *Network) NetAddCont(contact Contact) {
 		var last = network.rt.buckets[network.rt.getBucketIndex(contact.ID)].GetLast()
 		// if it's not alive then we add, else we don't
 		if !network.SendPingMessage(&last) {
-			if !network.CheckSame(contact, *network.rt.me) {
+			if !contact.ID.Equals(network.rt.me.ID) {
 				network.rt.AddContact(contact)
 			}
+		} else {
+			network.rt.AddContact(last)
 		}
 	} else {
-		if !network.CheckSame(contact, *network.rt.me) {
+		if !contact.ID.Equals(network.rt.me.ID) {
 			network.rt.AddContact(contact)
 		}
 	}
-}
-
-func (network *Network) CheckSame(contact1 Contact, contact2 Contact) bool {
-	if contact1.ID == contact2.ID {
-		return true
-	}
-	return false
 }

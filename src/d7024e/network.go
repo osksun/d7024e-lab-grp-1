@@ -62,6 +62,8 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 		log.Println("server findcontact")
 		mes = "findcontact response"
 		cl = network.rt.FindClosestContacts(m.Target.ID, bucketSize) // K = 20 here
+		log.Print("Here is a cl[0] distance")
+		log.Print(cl[0].distance)
 	case "finddata":
 		// find data handle
 		log.Println("server finddata")
@@ -71,7 +73,7 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 		// store handle
 		log.Println("server store")
 		// PUT NEEDS A STRING KEY ASSOCIATED WITH THE DATA
-		network.ht.Put([]byte("keyHERE"), m.Data)
+		network.ht.Put(m.Hash, m.Data)
 		mes = "Response from store"
 	default:
 		log.Println("server received an invalid message")

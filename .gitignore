@@ -13,3 +13,6 @@
 
 # Text editor VS Code
 *.vscode/
+
+# Debug files
+__debug_bin

@@ -1,4 +1,4 @@
-package cli
+package d7024e
 
 import (
 	"strings"
@@ -16,8 +16,8 @@ func Put() Cmd{
 			filename := args[0]
 			content := []byte(strings.Join(args[1:len(args)], " "))
 			hash := cli.node.Vht().Put([]byte(filename), []byte(content))
-			fmt.Printf("Hash: \"%d\"\n(Hex): \"%s\"\n"+
-				"Stored data: \"%s\" in the node's ValueHashtable\n",
+			fmt.Printf("Hash: \"%d\"\nHex : \"%s\"\n"+
+				"Stored content \"%s\" in the node's ValueHashtable\n",
 				hash, hex.EncodeToString(hash[:]), string(cli.node.Vht().Get([]byte(filename))))
 		},
 	}

@@ -49,7 +49,7 @@ func main() {
 	}
 	fmt.Println("node4 connections after: ", nConnections)*/
 
-	const nNodes = 50
+	const nNodes = 500
 	var nodes [nNodes]*d7024e.Node
 	for i := 0; i < nNodes; i++ {
 		nodes[i] = d7024e.NewNode("localhost:" + strconv.Itoa(i+10000))
@@ -57,7 +57,7 @@ func main() {
 
 	// Create random connections
 	rand.Seed(0)
-	nConnections := 1000 // Note that this is not the same number as the number of final connnections due to not avoiding collisions
+	nConnections := 30000 // Note that this is not the same number as the number of final connnections due to not avoiding collisions
 	for i := 0; i < nConnections; i++ {
 		n := rand.Intn(nNodes)
 		c := rand.Intn(nNodes - 1)

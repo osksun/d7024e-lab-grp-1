@@ -177,7 +177,7 @@ func (network *Network) SendFindContactMessage(target *Contact, receiver *Contac
 
 	if network.VibeCheck(c1) {
 		rm := <-c2
-		network.NetAddCont(rm.Responder)
+		go func() { network.NetAddCont(rm.Responder) }()
 		if rm.ContactList == nil {
 			log.Println("Error: node has no contacts and returns nil")
 		}
@@ -223,22 +223,15 @@ func (network *Network) NetAddCont(contact Contact) {
 		var last = network.rt.buckets[network.rt.getBucketIndex(contact.ID)].GetLast()
 		// if it's not alive then we add, else we don't
 		if !network.SendPingMessage(&last) {
-			if !network.CheckSame(contact, *network.rt.me) {
+			if !contact.ID.Equals(network.rt.me.ID) {
 				network.rt.AddContact(contact)
 			}
 		} else {
 			network.rt.AddContact(last)
 		}
 	} else {
-		if !network.CheckSame(contact, *network.rt.me) {
+		if !contact.ID.Equals(network.rt.me.ID) {
 			network.rt.AddContact(contact)
 		}
 	}
-}
-
-func (network *Network) CheckSame(contact1 Contact, contact2 Contact) bool {
-	if contact1.ID == contact2.ID {
-		return true
-	}
-	return false
 }

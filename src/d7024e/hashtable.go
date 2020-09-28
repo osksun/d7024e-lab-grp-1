@@ -17,9 +17,11 @@ import (
 // Value the content of the dictionary
 //type Value []byte
 
+const HashSize = 20
+
 // ValueHashtable the set of Items
 type ValueHashtable struct {
-	items map[[20]byte][]byte
+	items map[[HashSize]byte][]byte
 	lock  sync.RWMutex
 }
 
@@ -29,36 +31,36 @@ func NewValueHashtable() *ValueHashtable {
 	return valueHashtable
 }
 
-// the hash() private function uses sha1 hash function
-func hash(k []byte) [20]byte {
+// Hash function uses sha1 hash function
+func Hash(k []byte) [HashSize]byte {
 	hasher := sha1.New()
 	hasher.Write(k)
 	hashSlice := hasher.Sum(nil)
-	var hash [20]byte;
+	var hash [HashSize]byte;
 	copy(hash[:], hashSlice)
 	return hash
 }
 
 
 // Put item with value v and key k into the hashtable
-func (ht *ValueHashtable) Put(k []byte, v []byte) [20]byte {
+func (ht *ValueHashtable) Put(k [HashSize]byte, v []byte) {
 	ht.lock.Lock()
 	defer ht.lock.Unlock()
 	if ht.items == nil {
-		ht.items = make(map[[20]byte][]byte)
+		ht.items = make(map[[HashSize]byte][]byte)
 	}
 	ht.items[k] = v
 }
 
 // Remove item with key k from hashtable
-func (ht *ValueHashtable) Remove(k []byte) {
+func (ht *ValueHashtable) Remove(k [HashSize]byte) {
 	ht.lock.Lock()
 	defer ht.lock.Unlock()
 	delete(ht.items, k)
 }
 
 // Get item with key k from the hashtable
-func (ht *ValueHashtable) Get(k []byte) []byte {
+func (ht *ValueHashtable) Get(k [HashSize]byte) []byte {
 	ht.lock.RLock()
 	defer ht.lock.RUnlock()
 	return ht.items[k]

@@ -16,7 +16,7 @@ func leftPad(str string, pad rune, lenght int) string {
 
 func main() {
 	// Create nodes
-	
+
 	node1 := d7024e.NewNode("localhost:8000")
 	node2 := d7024e.NewNode("localhost:8001")
 	node3 := d7024e.NewNode("localhost:8002")
@@ -34,8 +34,8 @@ func main() {
 	go node4.SpinupNode(nil)
 	go node5.SpinupNode(nil)
 	node1.SpinupNode(nil)
-	
-	
+
+
 	var n4Buckets = node4.Rt().Buckets()
 	nConnections := 0
 	for i := 0; i < len(n4Buckets); i++ {
@@ -60,7 +60,7 @@ func main() {
 
 	// Create random connections
 	rand.Seed(0)
-	nConnections := 30000 // Note that this is not the same number as the number of final connnections due to not avoiding collisions
+	nConnections := 5000 // Note that this is not the same number as the number of final connnections due to not avoiding collisions
 	for i := 0; i < nConnections; i++ {
 		n := rand.Intn(nNodes)
 		c := rand.Intn(nNodes - 1)
@@ -84,6 +84,7 @@ func main() {
 		go nodes[i].SpinupNode(nil)
 	}
 
-	targetContact := nodes[40].Contact()
-	nodes[0].SpinupNode(targetContact)*/
+	targetContact := nodes[125].Contact()
+	nodes[0].SpinupNode(targetContact)
+	for {}
 }

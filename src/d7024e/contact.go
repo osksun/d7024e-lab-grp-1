@@ -71,3 +71,16 @@ func (candidates *ContactCandidates) Swap(i, j int) {
 func (candidates *ContactCandidates) Less(i, j int) bool {
 	return candidates.contacts[i].Less(&candidates.contacts[j])
 }
+
+// RemoveDuplicates removes duplicate contacts
+func (candidates *ContactCandidates) RemoveDuplicates() {
+	keys := make(map[string]bool)
+	list := []Contact{}
+	for _, entry := range candidates.contacts {
+		if _, value := keys[entry.Address]; !value {
+			keys[entry.Address] = true
+			list = append(list, entry)
+		}
+	}
+	candidates.contacts = list
+}

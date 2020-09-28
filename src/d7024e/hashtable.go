@@ -44,28 +44,24 @@ func hash(k []byte) [20]byte {
 func (ht *ValueHashtable) Put(k []byte, v []byte) [20]byte {
 	ht.lock.Lock()
 	defer ht.lock.Unlock()
-	hash := hash(k)
 	if ht.items == nil {
 		ht.items = make(map[[20]byte][]byte)
 	}
-	ht.items[hash] = v
-	return hash
+	ht.items[k] = v
 }
 
 // Remove item with key k from hashtable
 func (ht *ValueHashtable) Remove(k []byte) {
 	ht.lock.Lock()
 	defer ht.lock.Unlock()
-	hash := hash(k)
-	delete(ht.items, hash)
+	delete(ht.items, k)
 }
 
 // Get item with key k from the hashtable
 func (ht *ValueHashtable) Get(k []byte) []byte {
 	ht.lock.RLock()
 	defer ht.lock.RUnlock()
-	hash := hash(k)
-	return ht.items[hash]
+	return ht.items[k]
 }
 
 // Size returns the number of the hashtable elements

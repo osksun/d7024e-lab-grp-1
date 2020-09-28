@@ -1,7 +1,7 @@
 package d7024e
 
 import (
-	"fmt"
+	//"fmt"
 )
 
 // Get command for the cli
@@ -11,8 +11,8 @@ func Get() Cmd{
 		description: "Get content of a file",
 		usage: "\"get filename\", \"g filename\"",
 		action: func(cli *Cli, args ...string) {
-			filename := args[0]
-			fmt.Printf("Returned content: \"%s\"\n", string(cli.node.Vht().Get([]byte(filename))))
+			//filename := args[0]
+			//fmt.Printf("Returned content: \"%s\"\n", string(cli.node.Vht().Get([]byte(filename))))
 		},
 	}
 }

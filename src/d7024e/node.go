@@ -35,7 +35,10 @@ func (node *Node) SpinupNode(target *Contact) {
 	go node.net.Listen(node.contact.Address, serveMux)
 	time.Sleep(1 * time.Second)
 	if target != nil {
-		fmt.Println("Contact found:", node.kademlia.LookupContact(target).Address)
+		hash := node.kademlia.Store([]byte("ugabuga"), []byte("yo"))
+		data := node.kademlia.LookupData(hash)
+		fmt.Printf("Data found: \"%s\"", string(data))
+		//NewCli(node).Run()
 	}
 	//time.Sleep(2 * time.Second)
 

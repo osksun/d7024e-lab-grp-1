@@ -57,7 +57,7 @@ func main() {
 
 	// Create random connections
 	rand.Seed(0)
-	nConnections := 30000 // Note that this is not the same number as the number of final connnections due to not avoiding collisions
+	nConnections := 5000 // Note that this is not the same number as the number of final connnections due to not avoiding collisions
 	for i := 0; i < nConnections; i++ {
 		n := rand.Intn(nNodes)
 		c := rand.Intn(nNodes - 1)
@@ -81,6 +81,7 @@ func main() {
 		go nodes[i].SpinupNode(nil)
 	}
 
-	targetContact := nodes[40].Contact()
+	targetContact := nodes[125].Contact()
 	nodes[0].SpinupNode(targetContact)
+	for {}
 }

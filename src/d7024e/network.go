@@ -16,8 +16,8 @@ type Network struct {
 }
 
 type msg struct {
-	Message string
-	Hash    []byte
+	Message	string
+	Hash    [HashSize]byte
 	Data    []byte
 	Target  Contact
 	Sender  Contact
@@ -90,12 +90,12 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 	fmt.Fprintf(rw, string(r))
 }
 
-func (network *Network) sendhelper(mes string, hash []byte, data []byte, target *Contact, address string) response_msg {
+func (network *Network) sendhelper(mes string, hash [HashSize]byte, data []byte, target *Contact, address string) response_msg {
 	tm := msg{
-		Message: mes,
-		Hash:    hash,
-		Data:    data,
-		Sender:  *network.rt.me,
+		Message:	mes,
+		Hash:   	hash,
+		Data:   	data,
+		Sender:  	*network.rt.me,
 	}
 	if target != nil {
 		tm.Target = *target
@@ -144,7 +144,8 @@ func (network *Network) SendPingMessage(receiver *Contact) bool {
 	c1 := make(chan response_msg, 1)
 	c2 := make(chan response_msg, 1)
 	go func() {
-		rm := network.sendhelper("ping", nil, nil, nil, receiver.Address)
+		var nilHash [20]byte
+		rm := network.sendhelper("ping", nilHash, nil, nil, receiver.Address)
 		c1 <- rm
 		c2 <- rm
 	}()
@@ -162,7 +163,8 @@ func (network *Network) SendFindContactMessage(target *Contact, receiver *Contac
 	c1 := make(chan response_msg, 1)
 	c2 := make(chan response_msg, 1)
 	go func() {
-		rm := network.sendhelper("findcontact", nil, nil, target, receiver.Address)
+		var nilHash [20]byte
+		rm := network.sendhelper("findcontact", nilHash, nil, target, receiver.Address)
 		c1 <- rm
 		c2 <- rm
 	}()
@@ -179,17 +181,14 @@ func (network *Network) SendFindContactMessage(target *Contact, receiver *Contac
 }
 
 // Retrieves the data from the receiver node using the hash key
-func (network *Network) SendFindDataMessage(receiver *Contact, hash []byte) {
-	// TODO
+func (network *Network) SendFindDataMessage(hash [HashSize]byte, receiver *Contact) []byte{
 	rm := network.sendhelper("finddata", hash, nil, nil, receiver.Address)
-	log.Println(rm.Message)
+	return rm.Data
 }
 
 // Tells the receiving node to store the data
-func (network *Network) SendStoreMessage(receiver *Contact, data []byte) {
-	// TODO
-	rm := network.sendhelper("store", nil, data, nil, receiver.Address)
-	log.Println(rm.Message)
+func (network *Network) SendStoreMessage(receiver *Contact, hash [HashSize]byte, data []byte) {
+	network.sendhelper("store", hash, data, nil, receiver.Address)
 }
 
 func (network *Network) VibeCheck(c1 chan response_msg) bool {

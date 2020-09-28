@@ -3,6 +3,7 @@ package d7024e
 import (
 	"fmt"
 	"time"
+	"encoding/hex"
 )
 
 type Kademlia struct {
@@ -29,10 +30,8 @@ func printContacts(contacts []Contact) {
 func (kademlia *Kademlia) LookupContact(target *Contact) Contact {
 	start := time.Now()
 	c1 := make(chan []Contact)
-	//	c2 := make(chan []Contact)
 	var initiatorList []Contact
 	var candidateList ContactCandidates
-	//var ContactedList []Contact
 	initiatorList = kademlia.rt.FindClosestContacts(target.ID, kademlia.alpha)
 	var closestContact Contact
 	if initiatorList[0].Distance.EqualsZero() {
@@ -51,16 +50,50 @@ func (kademlia *Kademlia) LookupContact(target *Contact) Contact {
 		candidateList.Sort()
 		closestContact = candidateList.GetContacts(1)[0]
 	}
-	fmt.Println("Lookup took", time.Since(start))
+	fmt.Println("Lookup contact took", time.Since(start))
 	return closestContact
 }
 
-func (kademlia *Kademlia) LookupData(hash string) {
-	// TODO
+func (kademlia *Kademlia) LookupData(hash [HashSize]byte) []byte {
+	start := time.Now()
+	data := kademlia.net.ht.Get(hash)
+	if (data == nil) {
+		c1 := make(chan []byte)
+		var initiatorList []Contact
+		target := NewContact(NewKademliaID(hex.EncodeToString(hash[:])), "")
+		initiatorList = kademlia.rt.FindClosestContacts(target.ID, kademlia.alpha)
+		for i := 0; i < MinInt(kademlia.alpha, len(initiatorList)); i++ {
+			go kademlia.goFindData(hash, &initiatorList[i], c1)
+		}
+		data = <-c1
+	}
+	fmt.Println("Lookup data took", time.Since(start))
+	return data
 }
 
-func (kademlia *Kademlia) Store(data []byte) {
-	// TODO
+func (kademlia *Kademlia) Store(filename []byte, data []byte) [HashSize]byte{
+	start := time.Now()
+	hash := Hash(filename)
+	target := NewContact(NewKademliaID(hex.EncodeToString(hash[:])), "")
+	var initiatorList []Contact
+	initiatorList = kademlia.rt.FindClosestContacts(target.ID, kademlia.alpha)
+	var candidateList ContactCandidates
+	c1 := make(chan []Contact)
+	for i := 0; i < MinInt(kademlia.alpha, len(initiatorList)); i++ {
+		go kademlia.goFindNode(target, &initiatorList[i], c1)
+	}
+	for i := 0; i < MinInt(kademlia.alpha, len(initiatorList)); i++ {
+		newCandidates := <-c1
+		candidateList.Append(newCandidates)
+	}
+	candidateList.RemoveDuplicates()
+	candidateList.Sort()
+	closestContacts := candidateList.GetContacts(MinInt(bucketSize, candidateList.Len()))
+	for _, contact := range closestContacts {
+		kademlia.net.SendStoreMessage(&contact, hash, data)
+	}
+	fmt.Println("Store data took", time.Since(start))
+	return hash
 }
 
 func (kademlia *Kademlia) goFindNode(target *Contact, contact *Contact, channel chan []Contact) {
@@ -82,12 +115,17 @@ func (kademlia *Kademlia) goFindNode(target *Contact, contact *Contact, channel 
 				}
 			}
 			if requestList.contacts != nil {
-				requestList.Sort()
-				closestCandidate := requestList.GetContacts(1)[0]
-				if !(closestCandidate.Less(&resultList[0])) {
+				worstResult := resultList[len(resultList) - 1]
+				mergeList := requestList
+				mergeList.Append(resultList)
+				mergeList.RemoveDuplicates()
+				mergeList.Sort()
+				worstMergeMaxAllowed := MinInt(bucketSize, mergeList.Len())
+				// TODO handle if total contacts is less than bucketSize
+				if !mergeList.GetContacts(worstMergeMaxAllowed)[worstMergeMaxAllowed - 1].Distance.Less(worstResult.Distance) && len(resultList) >= bucketSize {
 					flag = false
 				} else {
-					resultList = requestList.GetContacts(requestList.Len())
+					resultList = mergeList.GetContacts(worstMergeMaxAllowed)
 				}
 			} else {
 				flag = false
@@ -95,6 +133,48 @@ func (kademlia *Kademlia) goFindNode(target *Contact, contact *Contact, channel 
 		}
 	}
 	channel <- resultList
+}
+
+func (kademlia *Kademlia) goFindData(hash [HashSize]byte, contact *Contact, channel chan []byte) {
+	data := kademlia.net.SendFindDataMessage(hash, contact)
+	if (data == nil) {
+		target := NewContact(NewKademliaID(hex.EncodeToString(hash[:])), "")
+		queriedList := []Contact{*kademlia.rt.me}
+		var requestList ContactCandidates
+		var resultList = kademlia.net.SendFindContactMessage(target, contact)
+		var flag = true
+		for ok := true; ok; ok = flag {
+			for i := 0; i < len(resultList); i++ {
+				if !kademlia.EqualKademliaID(queriedList, &resultList[i]) {
+					queriedList = append(queriedList, resultList[i])
+					data = kademlia.net.SendFindDataMessage(hash, contact)
+					if (data == nil) {
+						currentResponseList := kademlia.net.SendFindContactMessage(target, &resultList[i])
+						requestList.Append(currentResponseList)
+					} else {
+						flag = false
+						break
+					}
+				}
+			}
+			if requestList.contacts != nil && flag {
+				worstResult := resultList[len(resultList) - 1]
+				mergeList := requestList
+				mergeList.Append(resultList)
+				mergeList.RemoveDuplicates()
+				mergeList.Sort()
+				worstMergeMaxAllowed := MinInt(bucketSize, mergeList.Len())
+				if !mergeList.GetContacts(worstMergeMaxAllowed)[worstMergeMaxAllowed - 1].Distance.Less(worstResult.Distance) && len(resultList) >= bucketSize {
+					flag = false
+				} else {
+					resultList = mergeList.GetContacts(worstMergeMaxAllowed)
+				}
+			} else {
+				flag = false
+			}
+		}
+	}
+	channel <- data
 }
 
 // Searches argument list to see whether or not argument contact exists

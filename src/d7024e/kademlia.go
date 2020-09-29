@@ -121,7 +121,6 @@ func (kademlia *Kademlia) goFindNode(target *Contact, contact *Contact, channel 
 				mergeList.RemoveDuplicates()
 				mergeList.Sort()
 				worstMergeMaxAllowed := MinInt(bucketSize, mergeList.Len())
-				// TODO handle if total contacts is less than bucketSize
 				if !mergeList.GetContacts(worstMergeMaxAllowed)[worstMergeMaxAllowed - 1].Distance.Less(worstResult.Distance) && len(resultList) >= bucketSize {
 					flag = false
 				} else {

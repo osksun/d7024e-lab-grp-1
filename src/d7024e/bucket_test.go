@@ -18,7 +18,7 @@ func TestNewBucket(t *testing.T) {
 	fmt.Println("TestNewBucket finished running with status OK")
 }
 
-func TestAddContact(t *testing.T) {
+func TestBucketAddContact(t *testing.T) {
 	kID1, _ := NewKademliaID("FFFFFFFF00000000000000000000000000000000")
 	kID2, _ := NewKademliaID("FFFFFFF000000000000000000000000000000000")
 	nct := *NewContact(kID1, "localhost:8001")
@@ -35,7 +35,7 @@ func TestAddContact(t *testing.T) {
 	if bucket.GetFirst().ID != nct.ID {
 		t.Error("Bucket didn't move the contact to the front.")
 	}
-	fmt.Println("TestAddContact finished running with status OK")
+	fmt.Println("TestBucketAddContact finished running with status OK")
 }
 
 func TestGetContactAndCalcDistance(t *testing.T) {

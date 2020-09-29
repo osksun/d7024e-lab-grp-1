@@ -2,7 +2,6 @@ package d7024e
 
 import (
 	"strings"
-	"fmt"
 	"encoding/hex"
 )
 
@@ -12,11 +11,11 @@ func Put() Cmd{
 		triggers: []string{"put", "p"},
 		description: "Upload content",
 		usage: "\"put filename content...\", \"p filename content...\"",
-		action: func(cli *Cli, args ...string) {
+		action: func(cli *Cli, args ...string) string {
 			filename := []byte(args[0])
 			content := []byte(strings.Join(args[1:len(args)], " "))
 			hash := cli.node.kademlia.Store(filename, content)
-			fmt.Printf("Returned hash (hex): \"%s\"\n", hex.EncodeToString(hash[:]))
+			return "Returned hash (hex): \"" + hex.EncodeToString(hash[:]) + "\"\n"
 		},
 	}
 }

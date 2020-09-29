@@ -19,8 +19,10 @@ func TestNewBucket(t *testing.T) {
 }
 
 func TestAddContact(t *testing.T) {
-	nct := *NewContact(NewKademliaID("FFFFFFFF00000000000000000000000000000000"), "localhost:8001")
-	nct2 := *NewContact(NewKademliaID("FFFFFFF000000000000000000000000000000000"), "localhost:8002")
+	kID1, _ := NewKademliaID("FFFFFFFF00000000000000000000000000000000")
+	kID2, _ := NewKademliaID("FFFFFFF000000000000000000000000000000000")
+	nct := *NewContact(kID1, "localhost:8001")
+	nct2 := *NewContact(kID2, "localhost:8002")
 	bucket := newBucket()
 	ls1 := bucket.Len()
 	bucket.AddContact(nct)
@@ -37,12 +39,14 @@ func TestAddContact(t *testing.T) {
 }
 
 func TestGetContactAndCalcDistance(t *testing.T) {
-	nct := *NewContact(NewKademliaID("FFFFFFFF00000000000000000000000000000000"), "localhost:8001")
-	nct2 := *NewContact(NewKademliaID("FFFFFFF000000000000000000000000000000000"), "localhost:8002")
+	kID1, _ := NewKademliaID("FFFFFFFF00000000000000000000000000000000")
+	kID2, _ := NewKademliaID("FFFFFFF000000000000000000000000000000000")
+	nct := *NewContact(kID1, "localhost:8001")
+	nct2 := *NewContact(kID2, "localhost:8002")
 	bucket := newBucket()
 	bucket.AddContact(nct)
 	bucket.AddContact(nct2)
-	kdid := NewKademliaID("0000000000000000000000000000000000000000")
+	kdid, _ := NewKademliaID("0000000000000000000000000000000000000000")
 	contacts := bucket.GetContactAndCalcDistance(kdid)
 
 	if len(contacts) != 2 {
@@ -55,8 +59,10 @@ func TestGetContactAndCalcDistance(t *testing.T) {
 }
 
 func TestLen(t *testing.T) {
-	nct := *NewContact(NewKademliaID("FFFFFFFF00000000000000000000000000000000"), "localhost:8001")
-	nct2 := *NewContact(NewKademliaID("FFFFFFF000000000000000000000000000000000"), "localhost:8002")
+	kID1, _ := NewKademliaID("FFFFFFFF00000000000000000000000000000000")
+	kID2, _ := NewKademliaID("FFFFFFF000000000000000000000000000000000")
+	nct := *NewContact(kID1, "localhost:8001")
+	nct2 := *NewContact(kID2, "localhost:8002")
 	bucket := newBucket()
 	bucket.AddContact(nct)
 	bucket.AddContact(nct2)
@@ -67,8 +73,10 @@ func TestLen(t *testing.T) {
 }
 
 func TestGetLast(t *testing.T) {
-	nct := *NewContact(NewKademliaID("FFFFFFFF00000000000000000000000000000000"), "localhost:8001")
-	nct2 := *NewContact(NewKademliaID("FFFFFFF000000000000000000000000000000000"), "localhost:8002")
+	kID1, _ := NewKademliaID("FFFFFFFF00000000000000000000000000000000")
+	kID2, _ := NewKademliaID("FFFFFFF000000000000000000000000000000000")
+	nct := *NewContact(kID1, "localhost:8001")
+	nct2 := *NewContact(kID2, "localhost:8002")
 	bucket := newBucket()
 	bucket.AddContact(nct)
 	bucket.AddContact(nct2)
@@ -80,8 +88,10 @@ func TestGetLast(t *testing.T) {
 }
 
 func TestGetFirst(t *testing.T) {
-	nct := *NewContact(NewKademliaID("FFFFFFFF00000000000000000000000000000000"), "localhost:8001")
-	nct2 := *NewContact(NewKademliaID("FFFFFFF000000000000000000000000000000000"), "localhost:8002")
+	kID1, _ := NewKademliaID("FFFFFFFF00000000000000000000000000000000")
+	kID2, _ := NewKademliaID("FFFFFFF000000000000000000000000000000000")
+	nct := *NewContact(kID1, "localhost:8001")
+	nct2 := *NewContact(kID2, "localhost:8002")
 	bucket := newBucket()
 	bucket.AddContact(nct)
 	bucket.AddContact(nct2)

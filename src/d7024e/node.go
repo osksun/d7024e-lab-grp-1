@@ -64,7 +64,7 @@ func (node *Node) JoinNetwork(address string) {
 		nConnections += nodeBuckets[i].Len()
 	}
 	fmt.Println("Connections after 1st lookup: ", nConnections)
-	refreshContact.ID = node.contact.ID.IDwithinRange()
+	refreshContact.ID = node.contact.ID.IDWithinRange()
 	node.kademlia.LookupContact(&refreshContact)
 
 	nConnections = 0

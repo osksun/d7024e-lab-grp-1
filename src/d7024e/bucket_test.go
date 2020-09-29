@@ -10,84 +10,94 @@ func TestNewBucket(t *testing.T) {
 	lType := fmt.Sprintf("%T", bucket.list)
 	bType := fmt.Sprintf("%T", bucket)
 	if lType != "*list.List" {
-		t.Errorf("The bucket list is not of type list")
+		t.Error("The bucket list is not of type list")
 	}
 	if bType != "*d7024e.bucket" {
-		t.Errorf("The bucket is not of type bucket")
+		t.Error("The bucket is not of type bucket")
 	}
-	fmt.Printf("TestNewBucket finished running with status OK\n")
+	fmt.Println("TestNewBucket finished running with status OK")
 }
 
-func TestAddContact(t *testing.T) {
-	nct := *NewContact(NewKademliaID("FFFFFFFF00000000000000000000000000000000"), "localhost:8001")
-	nct2 := *NewContact(NewKademliaID("FFFFFFF000000000000000000000000000000000"), "localhost:8002")
+func TestBucketAddContact(t *testing.T) {
+	kID1, _ := NewKademliaID("FFFFFFFF00000000000000000000000000000000")
+	kID2, _ := NewKademliaID("FFFFFFF000000000000000000000000000000000")
+	nct := *NewContact(kID1, "localhost:8001")
+	nct2 := *NewContact(kID2, "localhost:8002")
 	bucket := newBucket()
 	ls1 := bucket.Len()
 	bucket.AddContact(nct)
 	ls2 := bucket.Len()
 	if !(ls1 < ls2) {
-		t.Errorf("Bucket size didn't increase when adding as it should.")
+		t.Error("Bucket size didn't increase when adding as it should.")
 	}
 	bucket.AddContact(nct2)
 	bucket.AddContact(nct)
 	if bucket.GetFirst().ID != nct.ID {
-		t.Errorf("Bucket didn't move the contact to the front.")
+		t.Error("Bucket didn't move the contact to the front.")
 	}
-	fmt.Printf("TestAddContact finished running with status OK\n")
+	fmt.Println("TestBucketAddContact finished running with status OK")
 }
 
 func TestGetContactAndCalcDistance(t *testing.T) {
-	nct := *NewContact(NewKademliaID("FFFFFFFF00000000000000000000000000000000"), "localhost:8001")
-	nct2 := *NewContact(NewKademliaID("FFFFFFF000000000000000000000000000000000"), "localhost:8002")
+	kID1, _ := NewKademliaID("FFFFFFFF00000000000000000000000000000000")
+	kID2, _ := NewKademliaID("FFFFFFF000000000000000000000000000000000")
+	nct := *NewContact(kID1, "localhost:8001")
+	nct2 := *NewContact(kID2, "localhost:8002")
 	bucket := newBucket()
 	bucket.AddContact(nct)
 	bucket.AddContact(nct2)
-	kdid := NewKademliaID("0000000000000000000000000000000000000000")
+	kdid, _ := NewKademliaID("0000000000000000000000000000000000000000")
 	contacts := bucket.GetContactAndCalcDistance(kdid)
 
 	if len(contacts) != 2 {
-		t.Errorf("Bucket didn't return all of the contacts")
+		t.Error("Bucket didn't return all of the contacts")
 	}
 	if contacts[0].Distance.String() != "fffffff000000000000000000000000000000000" || contacts[1].Distance.String() != "ffffffff00000000000000000000000000000000" {
-		t.Errorf("Bucket didn't calculate the distance correctly.")
+		t.Error("Bucket didn't calculate the distance correctly.")
 	}
-	fmt.Printf("TestGetContactAndCalcDistance finished running with status OK\n")
+	fmt.Println("TestGetContactAndCalcDistance finished running with status OK")
 }
 
 func TestLen(t *testing.T) {
-	nct := *NewContact(NewKademliaID("FFFFFFFF00000000000000000000000000000000"), "localhost:8001")
-	nct2 := *NewContact(NewKademliaID("FFFFFFF000000000000000000000000000000000"), "localhost:8002")
+	kID1, _ := NewKademliaID("FFFFFFFF00000000000000000000000000000000")
+	kID2, _ := NewKademliaID("FFFFFFF000000000000000000000000000000000")
+	nct := *NewContact(kID1, "localhost:8001")
+	nct2 := *NewContact(kID2, "localhost:8002")
 	bucket := newBucket()
 	bucket.AddContact(nct)
 	bucket.AddContact(nct2)
 	if bucket.Len() != 2 {
-		t.Errorf("Bucket didn't return the correct length.")
+		t.Error("Bucket didn't return the correct length.")
 	}
-	fmt.Printf("TestLen finished running with status OK\n")
+	fmt.Println("TestLen finished running with status OK")
 }
 
 func TestGetLast(t *testing.T) {
-	nct := *NewContact(NewKademliaID("FFFFFFFF00000000000000000000000000000000"), "localhost:8001")
-	nct2 := *NewContact(NewKademliaID("FFFFFFF000000000000000000000000000000000"), "localhost:8002")
+	kID1, _ := NewKademliaID("FFFFFFFF00000000000000000000000000000000")
+	kID2, _ := NewKademliaID("FFFFFFF000000000000000000000000000000000")
+	nct := *NewContact(kID1, "localhost:8001")
+	nct2 := *NewContact(kID2, "localhost:8002")
 	bucket := newBucket()
 	bucket.AddContact(nct)
 	bucket.AddContact(nct2)
 
-	if bucket.GetLast().ID.String() != "FFFFFFFF00000000000000000000000000000000" {
-		t.Errorf("Bucket didn't get the last correct element.")
+	if bucket.GetLast().ID != nct.ID {
+		t.Error("Bucket didn't get the last correct element.")
 	}
-	fmt.Printf("TestGetLast finished running with status OK\n")
+	fmt.Println("TestGetLast finished running with status OK")
 }
 
 func TestGetFirst(t *testing.T) {
-	nct := *NewContact(NewKademliaID("FFFFFFFF00000000000000000000000000000000"), "localhost:8001")
-	nct2 := *NewContact(NewKademliaID("FFFFFFF000000000000000000000000000000000"), "localhost:8002")
+	kID1, _ := NewKademliaID("FFFFFFFF00000000000000000000000000000000")
+	kID2, _ := NewKademliaID("FFFFFFF000000000000000000000000000000000")
+	nct := *NewContact(kID1, "localhost:8001")
+	nct2 := *NewContact(kID2, "localhost:8002")
 	bucket := newBucket()
 	bucket.AddContact(nct)
 	bucket.AddContact(nct2)
 
-	if bucket.GetFirst().ID.String() != "FFFFFFF000000000000000000000000000000000" {
-		t.Errorf("Bucket didn't get the first correct element.")
+	if bucket.GetFirst().ID != nct2.ID {
+		t.Error("Bucket didn't get the first correct element.")
 	}
-	fmt.Printf("TestGetFirst finished running with status OK\n")
+	fmt.Println("TestGetFirst finished running with status OK")
 }

@@ -9,9 +9,6 @@ import (
 )
 
 func main() {
-
-	d7024e.Shitty()
-
 	// Create nodes
 	/*
 		node1 := d7024e.NewNode("localhost:8000")

@@ -60,7 +60,8 @@ func (kademlia *Kademlia) LookupData(hash [HashSize]byte) []byte {
 	if data == nil {
 		c1 := make(chan []byte)
 		var initiatorList []Contact
-		target := NewContact(NewKademliaID(hex.EncodeToString(hash[:])), "")
+		kID, _ := NewKademliaID(hex.EncodeToString(hash[:]))
+		target := NewContact(kID, "")
 		initiatorList = kademlia.rt.FindClosestContacts(target.ID, kademlia.alpha)
 		for i := 0; i < MinInt(kademlia.alpha, len(initiatorList)); i++ {
 			go kademlia.goFindData(hash, &initiatorList[i], c1)
@@ -74,7 +75,8 @@ func (kademlia *Kademlia) LookupData(hash [HashSize]byte) []byte {
 func (kademlia *Kademlia) Store(filename []byte, data []byte) [HashSize]byte {
 	start := time.Now()
 	hash := Hash(filename)
-	target := NewContact(NewKademliaID(hex.EncodeToString(hash[:])), "")
+	kID, _ := NewKademliaID(hex.EncodeToString(hash[:]))
+	target := NewContact(kID, "")
 	var initiatorList []Contact
 	initiatorList = kademlia.rt.FindClosestContacts(target.ID, kademlia.alpha)
 	var candidateList ContactCandidates
@@ -137,7 +139,8 @@ func (kademlia *Kademlia) goFindNode(target *Contact, contact *Contact, channel 
 func (kademlia *Kademlia) goFindData(hash [HashSize]byte, contact *Contact, channel chan []byte) {
 	data := kademlia.net.SendFindDataMessage(hash, contact)
 	if data == nil {
-		target := NewContact(NewKademliaID(hex.EncodeToString(hash[:])), "")
+		kID, _ := NewKademliaID(hex.EncodeToString(hash[:]))
+		target := NewContact(kID, "")
 		queriedList := []Contact{*kademlia.rt.me}
 		var requestList ContactCandidates
 		var resultList = kademlia.net.SendFindContactMessage(target, contact)

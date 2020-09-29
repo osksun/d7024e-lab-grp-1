@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+	"os"
 )
 
 type Node struct {
@@ -40,7 +41,7 @@ func (node *Node) SpinupNode(target *Contact) {
 		data := node.kademlia.LookupData(hash)
 		fmt.Printf("Data found: \"%s\"", string(data))
 		*/
-		NewCli(node).Run()
+		NewCli(node, os.Stdin).Run(false, true)
 	}
 	//time.Sleep(2 * time.Second)
 
@@ -64,7 +65,7 @@ func (node *Node) JoinNetwork(address string) {
 		nConnections += nodeBuckets[i].Len()
 	}
 	fmt.Println("Connections after 1st lookup: ", nConnections)
-	refreshContact.ID = node.contact.ID.IDwithinRange()
+	refreshContact.ID = node.contact.ID.IDWithinRange()
 	node.kademlia.LookupContact(&refreshContact)
 
 	nConnections = 0

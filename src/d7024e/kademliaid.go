@@ -3,6 +3,7 @@ package d7024e
 import (
 	"encoding/hex"
 	"math/rand"
+	"errors"
 )
 
 // IDLength the static number of bytes in a KademliaID
@@ -12,15 +13,16 @@ const IDLength = 20
 type KademliaID [IDLength]byte
 
 // NewKademliaID returns a new instance of a KademliaID based on the string input
-func NewKademliaID(data string) *KademliaID {
-	decoded, _ := hex.DecodeString(data)
-
+func NewKademliaID(hexID string) (*KademliaID, error) {
+	decoded, _ := hex.DecodeString(hexID)
+	if len(decoded) != IDLength {
+		return nil, errors.New("Invalid id length")
+	}
 	newKademliaID := KademliaID{}
 	for i := 0; i < IDLength; i++ {
 		newKademliaID[i] = decoded[i]
 	}
-
-	return &newKademliaID
+	return &newKademliaID, nil
 }
 
 // NewRandomKademliaID returns a new instance of a random KademliaID,
@@ -55,7 +57,8 @@ func (kademliaID KademliaID) Equals(otherKademliaID *KademliaID) bool {
 
 // EqualsZero returns true if kademliaID is zero
 func (kademliaID KademliaID) EqualsZero() bool {
-	return kademliaID.Equals(NewKademliaID("0000000000000000000000000000000000000000"))
+	zID, _ := NewKademliaID("0000000000000000000000000000000000000000")
+	return kademliaID.Equals(zID)
 }
 
 // CalcDistance returns a new instance of a KademliaID that is built
@@ -73,8 +76,8 @@ func (kademliaID *KademliaID) String() string {
 	return hex.EncodeToString(kademliaID[0:IDLength])
 }
 
-// IDwithinRange returns an ID which is not itself or a neighbour
-func (kademliaID *KademliaID) IDwithinRange() *KademliaID {
+// IDWithinRange returns an ID which is not itself or a neighbour
+func (kademliaID *KademliaID) IDWithinRange() *KademliaID {
 	var flag bool = true
 	var resultKademliaID *KademliaID
 	var neighbouringID *KademliaID = kademliaID

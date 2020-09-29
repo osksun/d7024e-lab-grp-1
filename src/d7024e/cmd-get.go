@@ -1,7 +1,6 @@
 package d7024e
 
 import (
-	"fmt"
 	"encoding/hex"
 )
 
@@ -11,12 +10,12 @@ func Get() Cmd{
 		triggers: []string{"get", "g"},
 		description: "Get content of a file",
 		usage: "\"get hashOfFileName\", \"g hashOfFileName\"",
-		action: func(cli *Cli, args ...string) {
+		action: func(cli *Cli, args ...string) string {
 			filenameHashSlice, _ := hex.DecodeString(args[0])
 			var filenameHash [HashSize]byte
 			copy(filenameHash[:], filenameHashSlice)
 			data := cli.node.kademlia.LookupData(filenameHash)
-			fmt.Printf("Returned content: \"%s\"\n", string(data))
+			return "Returned content: \"" + string(data) + "\""
 		},
 	}
 }

@@ -75,7 +75,7 @@ func TestEqualsZero(t *testing.T) {
 	}
 }
 
-func TestCalcDistance(t *testing.T) {
+func TestKademliaIDCalcDistance(t *testing.T) {
 	largeID := leftPad("", 'a', IDLength * 2)
 	smallID := leftPad("", '1', IDLength * 2)
 	expectedID := leftPad("", 'b', IDLength * 2)
@@ -88,7 +88,7 @@ func TestCalcDistance(t *testing.T) {
 	}
 }
 
-func TestString(t *testing.T) {
+func TestKademliaIDString(t *testing.T) {
 	strID := leftPad("", 'a', IDLength * 2)
 	kademliaID, _ := NewKademliaID(strID)
 	returnedStrID := kademliaID.String()

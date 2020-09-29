@@ -5,7 +5,7 @@ import (
 )
 
 func TestNewContact(t *testing.T){
-	testKademliaID := NewKademliaID("FFFFFFFF00000000000000000000000000000000")
+	testKademliaID, _ := NewKademliaID("FFFFFFFF00000000000000000000000000000000")
 	testAddress := "localhost:8000"
 	testContact := NewContact(testKademliaID, testAddress)
 
@@ -14,13 +14,13 @@ func TestNewContact(t *testing.T){
 	}
 }
 
-func TestCalcDistance(t *testing.T){
-	testKademliaID0 := NewKademliaID("FFFFFFFF00000000000000000000000000000000")
-	testKademliaID1 := NewKademliaID("FFFFFFFE00000000000000000000000000000000")
-	testKademliaID2 := NewKademliaID("0000000010000000000000000000000000000000")
+func TestContactCalcDistance(t *testing.T){
+	testKademliaID0, _ := NewKademliaID("FFFFFFFF00000000000000000000000000000000")
+	testKademliaID1, _ := NewKademliaID("FFFFFFFE00000000000000000000000000000000")
+	testKademliaID2, _ := NewKademliaID("0000000010000000000000000000000000000000")
 	testAddress := "localhost:8000"
 	testContact := NewContact(testKademliaID0, testAddress)
-	
+
 	testContact.CalcDistance(testKademliaID1)
 	if (testContact.Distance == testKademliaID2){
 		t.Error("CalcDistance failed, distance was not 1")
@@ -29,13 +29,13 @@ func TestCalcDistance(t *testing.T){
 
 }
 
-func TestLess(t *testing.T){
+func TestContactLess(t *testing.T){
 	bigID := leftPad("", 'F', IDLength * 2)
 	mediumID := leftPad("", '8', IDLength * 2)
 	tinyID := leftPad("", '0', IDLength * 2)
-	bigContact := NewKademliaID(bigID)
-	mediumContact := NewKademliaID(mediumID)
-	tinyContact := NewKademliaID(tinyID)
+	bigContact, _ := NewKademliaID(bigID)
+	mediumContact, _ := NewKademliaID(mediumID)
+	tinyContact, _ := NewKademliaID(tinyID)
 
 
 	if tinyContact.Less(bigContact) == false{
@@ -52,9 +52,9 @@ func TestLess(t *testing.T){
 
 }
 
-func TestString(t *testing.T){
+func TestContactString(t *testing.T){
 	testID := leftPad("", 'f', IDLength * 2)
-	testKademliaID := NewKademliaID(testID)
+	testKademliaID, _ := NewKademliaID(testID)
 	testAddress := "localhost:8000"
 	testContact := NewContact(testKademliaID, testAddress)
 
@@ -67,12 +67,12 @@ func TestString(t *testing.T){
 
 func TestAppend(t *testing.T){
 	testID0 := leftPad("", 'f', IDLength * 2)
-	testKademliaID0 := NewKademliaID(testID0)
+	testKademliaID0, _ := NewKademliaID(testID0)
 	testAddress0 := "localhost:8000"
 	testContact0 := NewContact(testKademliaID0, testAddress0)
 
 	testID1 := leftPad("", 'e', IDLength * 2)
-	testKademliaID1 := NewKademliaID(testID1)
+	testKademliaID1, _ := NewKademliaID(testID1)
 	testAddress1 := "localhost:8001"
 	testContact1 := NewContact(testKademliaID1, testAddress1)
 
@@ -92,12 +92,12 @@ func TestAppend(t *testing.T){
 
 func TestGetContacts(t *testing.T){
 	testID0 := leftPad("", 'f', IDLength * 2)
-	testKademliaID0 := NewKademliaID(testID0)
+	testKademliaID0, _ := NewKademliaID(testID0)
 	testAddress0 := "localhost:8000"
 	testContact0 := NewContact(testKademliaID0, testAddress0)
 
 	testID1 := leftPad("", 'e', IDLength * 2)
-	testKademliaID1 := NewKademliaID(testID1)
+	testKademliaID1, _ := NewKademliaID(testID1)
 	testAddress1 := "localhost:8001"
 	testContact1 := NewContact(testKademliaID1, testAddress1)
 
@@ -110,36 +110,36 @@ func TestGetContacts(t *testing.T){
 	receivedContacts0 := testContactCandidates.GetContacts(1)
 	if (len(receivedContacts0) != 1){
 		t.Error("GetContacts failed, Incorrect size of contacts received")
-	} 
+	}
 	receivedContacts1 := testContactCandidates.GetContacts(2)
 	if (len(receivedContacts1) != 2){
 		t.Error("GetContacts failed, Incorrect size of contacts received")
-	} 
+	}
 
 }
 
 func TestSort(t *testing.T){
 
 	testID0 := leftPad("", 'f', IDLength * 2)
-	testKademliaID0 := NewKademliaID(testID0)
+	testKademliaID0, _ := NewKademliaID(testID0)
 	testAddress0 := "localhost:8000"
 	testContact0 := NewContact(testKademliaID0, testAddress0)
 	testContact0.CalcDistance(testContact0.ID)
 
 	testID1 := leftPad("", '2', IDLength * 2)
-	testKademliaID1 := NewKademliaID(testID1)
+	testKademliaID1, _ := NewKademliaID(testID1)
 	testAddress1 := "localhost:8001"
 	testContact1 := NewContact(testKademliaID1, testAddress1)
 	testContact1.CalcDistance(testContact0.ID)
 
 	testID2 := leftPad("", 'b', IDLength * 2)
-	testKademliaID2 := NewKademliaID(testID2)
+	testKademliaID2, _ := NewKademliaID(testID2)
 	testAddress2 := "localhost:8002"
 	testContact2 := NewContact(testKademliaID2, testAddress2)
 	testContact2.CalcDistance(testContact0.ID)
 
 	testID3 := leftPad("", '5', IDLength * 2)
-	testKademliaID3 := NewKademliaID(testID3)
+	testKademliaID3, _ := NewKademliaID(testID3)
 	testAddress3 := "localhost:8003"
 	testContact3 := NewContact(testKademliaID3, testAddress3)
 	testContact3.CalcDistance(testContact0.ID)
@@ -178,25 +178,25 @@ func TestSort(t *testing.T){
 
 func TestContactLen(t *testing.T){
 	testID0 := leftPad("", 'f', IDLength * 2)
-	testKademliaID0 := NewKademliaID(testID0)
+	testKademliaID0, _ := NewKademliaID(testID0)
 	testAddress0 := "localhost:8000"
 	testContact0 := NewContact(testKademliaID0, testAddress0)
 	testContact0.CalcDistance(testContact0.ID)
 
 	testID1 := leftPad("", 'e', IDLength * 2)
-	testKademliaID1 := NewKademliaID(testID1)
+	testKademliaID1, _ := NewKademliaID(testID1)
 	testAddress1 := "localhost:8001"
 	testContact1 := NewContact(testKademliaID1, testAddress1)
 	testContact1.CalcDistance(testContact0.ID)
 
 	testID2 := leftPad("", '1', IDLength * 2)
-	testKademliaID2 := NewKademliaID(testID2)
+	testKademliaID2, _ := NewKademliaID(testID2)
 	testAddress2 := "localhost:8002"
 	testContact2 := NewContact(testKademliaID2, testAddress2)
 	testContact2.CalcDistance(testContact0.ID)
 
 	testID3 := leftPad("", '7', IDLength * 2)
-	testKademliaID3 := NewKademliaID(testID3)
+	testKademliaID3, _ := NewKademliaID(testID3)
 	testAddress3 := "localhost:8003"
 	testContact3 := NewContact(testKademliaID3, testAddress3)
 	testContact3.CalcDistance(testContact0.ID)
@@ -222,25 +222,25 @@ func TestContactLen(t *testing.T){
 
 func TestSwap(t *testing.T){
 	testID0 := leftPad("", 'f', IDLength * 2)
-	testKademliaID0 := NewKademliaID(testID0)
+	testKademliaID0, _ := NewKademliaID(testID0)
 	testAddress0 := "localhost:8000"
 	testContact0 := NewContact(testKademliaID0, testAddress0)
 	testContact0.CalcDistance(testContact0.ID)
 
 	testID1 := leftPad("", 'e', IDLength * 2)
-	testKademliaID1 := NewKademliaID(testID1)
+	testKademliaID1, _ := NewKademliaID(testID1)
 	testAddress1 := "localhost:8001"
 	testContact1 := NewContact(testKademliaID1, testAddress1)
 	testContact1.CalcDistance(testContact0.ID)
 
 	testID2 := leftPad("", '1', IDLength * 2)
-	testKademliaID2 := NewKademliaID(testID2)
+	testKademliaID2, _ := NewKademliaID(testID2)
 	testAddress2 := "localhost:8002"
 	testContact2 := NewContact(testKademliaID2, testAddress2)
 	testContact2.CalcDistance(testContact0.ID)
 
 	testID3 := leftPad("", '2', IDLength * 2)
-	testKademliaID3 := NewKademliaID(testID3)
+	testKademliaID3, _ := NewKademliaID(testID3)
 	testAddress3 := "localhost:8003"
 	testContact3 := NewContact(testKademliaID3, testAddress3)
 	testContact3.CalcDistance(testContact0.ID)
@@ -262,13 +262,13 @@ func TestSwap(t *testing.T){
 
 func TestContactCandidatesLess (t *testing.T){
 	testID0 := leftPad("", 'f', IDLength * 2)
-	testKademliaID0 := NewKademliaID(testID0)
+	testKademliaID0, _ := NewKademliaID(testID0)
 	testAddress0 := "localhost:8000"
 	testContact0 := NewContact(testKademliaID0, testAddress0)
 	testContact0.CalcDistance(testContact0.ID)
 
 	testID1 := leftPad("", 'e', IDLength * 2)
-	testKademliaID1 := NewKademliaID(testID1)
+	testKademliaID1, _ := NewKademliaID(testID1)
 	testAddress1 := "localhost:8001"
 	testContact1 := NewContact(testKademliaID1, testAddress1)
 	testContact1.CalcDistance(testContact0.ID)
@@ -280,27 +280,27 @@ func TestContactCandidatesLess (t *testing.T){
 
 func TestRemoveDuplicates(t *testing.T){
 	testID0 := leftPad("", 'f', IDLength * 2)
-	testKademliaID0 := NewKademliaID(testID0)
+	testKademliaID0, _ := NewKademliaID(testID0)
 	testAddress0 := "localhost:8000"
 	testContact0 := NewContact(testKademliaID0, testAddress0)
 
 	testID1 := leftPad("", 'e', IDLength * 2)
-	testKademliaID1 := NewKademliaID(testID1)
+	testKademliaID1, _ := NewKademliaID(testID1)
 	testAddress1 := "localhost:8000"
 	testContact1 := NewContact(testKademliaID1, testAddress1)
 
 	testID2 := leftPad("", '6', IDLength * 2)
-	testKademliaID2 := NewKademliaID(testID2)
+	testKademliaID2, _ := NewKademliaID(testID2)
 	testAddress2 := "localhost:8000"
 	testContact2 := NewContact(testKademliaID2, testAddress2)
 
 	testID3 := leftPad("", '1', IDLength * 2)
-	testKademliaID3 := NewKademliaID(testID3)
+	testKademliaID3, _ := NewKademliaID(testID3)
 	testAddress3 := "localhost:8000"
 	testContact3 := NewContact(testKademliaID3, testAddress3)
 
 	testID4 := leftPad("", '2', IDLength * 2)
-	testKademliaID4 := NewKademliaID(testID4)
+	testKademliaID4, _ := NewKademliaID(testID4)
 	testAddress4 := "localhost:8003"
 	testContact4 := NewContact(testKademliaID4, testAddress4)
 

@@ -7,6 +7,7 @@ package d7024e
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
 )
 
@@ -35,38 +36,78 @@ func TestPut(t *testing.T) {
 	k1 := []byte("test")
 	v1 := []byte("value")
 	ht := NewValueHashtable()
+
+	it := ht.items
+
 	copy(k[:], k1)
 	ht.Put(k, v1)
-	fmt.Println(ht.items)
+
+	it2 := ht.items
+
+	if it != nil || it2 == nil {
+		t.Errorf("Hashtable items wasn't initialized as nil or not made.")
+	}
+
+	testitems := make(map[[HashSize]byte][]byte)
+	testitems[k] = v1
+
+	if !reflect.DeepEqual(ht.items, testitems) {
+		t.Errorf("Hashtable didn't put correctly.")
+	}
+	fmt.Printf("TestPut finished running with status OK\n")
 }
 
-// // Put item with value v and key k into the hashtable
-// func (ht *ValueHashtable) Put(k [HashSize]byte, v []byte) {
-// 	ht.lock.Lock()
-// 	defer ht.lock.Unlock()
-// 	if ht.items == nil {
-// 		ht.items = make(map[[HashSize]byte][]byte)
-// 	}
-// 	ht.items[k] = v
-// }
+func TestRemove(t *testing.T) {
+	var k [HashSize]byte
+	k1 := []byte("test")
+	v1 := []byte("value")
+	ht := NewValueHashtable()
+	copy(k[:], k1)
 
-// // Remove item with key k from hashtable
-// func (ht *ValueHashtable) Remove(k [HashSize]byte) {
-// 	ht.lock.Lock()
-// 	defer ht.lock.Unlock()
-// 	delete(ht.items, k)
-// }
+	testitems := make(map[[HashSize]byte][]byte)
+	testitems[k] = v1
 
-// // Get item with key k from the hashtable
-// func (ht *ValueHashtable) Get(k [HashSize]byte) []byte {
-// 	ht.lock.RLock()
-// 	defer ht.lock.RUnlock()
-// 	return ht.items[k]
-// }
+	ht.items = testitems
+	ht.Remove(k)
 
-// // Size returns the number of the hashtable elements
-// func (ht *ValueHashtable) Size() int {
-// 	ht.lock.RLock()
-// 	defer ht.lock.RUnlock()
-// 	return len(ht.items)
-// }
+	if ht.items[k] != nil {
+		t.Errorf("Hashtable didn't remove correctly.")
+	}
+	fmt.Printf("TestRemove finished running with status OK\n")
+}
+
+func TestGet(t *testing.T) {
+	var k [HashSize]byte
+	k1 := []byte("test")
+	v1 := []byte("value")
+	ht := NewValueHashtable()
+	copy(k[:], k1)
+
+	testitems := make(map[[HashSize]byte][]byte)
+	testitems[k] = v1
+
+	ht.items = testitems
+
+	item := ht.Get(k)
+	if !reflect.DeepEqual(item, v1) {
+		t.Errorf("Hashtable didn't get correctly.")
+	}
+	fmt.Printf("TestGet finished running with status OK\n")
+}
+
+func TestSize(t *testing.T) {
+	var k [HashSize]byte
+	k1 := []byte("test")
+	v1 := []byte("value")
+	ht := NewValueHashtable()
+	copy(k[:], k1)
+
+	testitems := make(map[[HashSize]byte][]byte)
+	testitems[k] = v1
+
+	ht.items = testitems
+	if ht.Size() != 1 {
+		t.Errorf("Hashtable didn't get the correct size.")
+	}
+	fmt.Printf("TestSize finished running with status OK\n")
+}

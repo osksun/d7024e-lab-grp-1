@@ -12,7 +12,7 @@ type Cmd struct {
 	action func(cli *Cli, args ...string)
 }
 
-// matches checks if given input matches either the name or any of the aliases of the command
+// matches checks if given input matches any trigger of the command
 func (cmd *Cmd) matches(input string) bool {
 	input = strings.ToLower(input)
 	for i := 0; i < len(cmd.triggers); i++ {

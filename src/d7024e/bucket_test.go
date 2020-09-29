@@ -16,12 +16,10 @@ func TestNewBucket(t *testing.T) {
 	bucket := newBucket()
 	lType := fmt.Sprintf("%T", bucket.list)
 	bType := fmt.Sprintf("%T", bucket)
-	fmt.Print(lType)
-	fmt.Print(bType)
-	if lType != "list" {
+	if lType != "*list.List" {
 		t.Errorf("The bucket list is not of type list")
 	}
-	if bType != "bucket" {
+	if bType != "*d7024e.bucket" {
 		t.Errorf("The bucket is not of type bucket")
 	}
 }

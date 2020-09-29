@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"strconv"
+
 	"./d7024e"
 )
 
@@ -15,39 +16,42 @@ func leftPad(str string, pad rune, lenght int) string {
 }
 
 func main() {
+
+	d7024e.Shitty()
+
 	// Create nodes
 	/*
-	node1 := d7024e.NewNode("localhost:8000")
-	node2 := d7024e.NewNode("localhost:8001")
-	node3 := d7024e.NewNode("localhost:8002")
-	node4 := d7024e.NewNode("localhost:8003")
+		node1 := d7024e.NewNode("localhost:8000")
+		node2 := d7024e.NewNode("localhost:8001")
+		node3 := d7024e.NewNode("localhost:8002")
+		node4 := d7024e.NewNode("localhost:8003")
 
-	node1.AddContact(node2.Contact())
-	node2.AddContact(node3.Contact())
-	node3.AddContact(node4.Contact())
-	node4.AddContact(node1.Contact())
+		node1.AddContact(node2.Contact())
+		node2.AddContact(node3.Contact())
+		node3.AddContact(node4.Contact())
+		node4.AddContact(node1.Contact())
 
-	go node2.SpinupNode(nil)
-	go node3.SpinupNode(nil)
-	go node4.SpinupNode(nil)
-	node1.SpinupNode(node4.Contact())
+		go node2.SpinupNode(nil)
+		go node3.SpinupNode(nil)
+		go node4.SpinupNode(nil)
+		node1.SpinupNode(node4.Contact())
 	*/
 	/*
-	var n4Buckets = node4.Rt().Buckets()
-	nConnections := 0
-	for i := 0; i < len(n4Buckets); i++ {
-		nConnections += n4Buckets[i].Len()
-	}
-	fmt.Println("node4 connections before: ", nConnections)
-	// Fake bucket insertion
-	node1.AddContact(node2.Contact())
-	node4.JoinNetwork("localhost:8000")
+		var n4Buckets = node4.Rt().Buckets()
+		nConnections := 0
+		for i := 0; i < len(n4Buckets); i++ {
+			nConnections += n4Buckets[i].Len()
+		}
+		fmt.Println("node4 connections before: ", nConnections)
+		// Fake bucket insertion
+		node1.AddContact(node2.Contact())
+		node4.JoinNetwork("localhost:8000")
 
-	nConnections = 0
-	for i := 0; i < len(n4Buckets); i++ {
-		nConnections += n4Buckets[i].Len()
-	}
-	fmt.Println("node4 connections after: ", nConnections)*/
+		nConnections = 0
+		for i := 0; i < len(n4Buckets); i++ {
+			nConnections += n4Buckets[i].Len()
+		}
+		fmt.Println("node4 connections after: ", nConnections)*/
 
 	const nNodes = 500
 	var nodes [nNodes]*d7024e.Node

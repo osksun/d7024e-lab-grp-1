@@ -15,9 +15,9 @@ func TestNewValueHashtable(t *testing.T) {
 	ht := NewValueHashtable()
 	htType := fmt.Sprintf("%T", ht)
 	if htType != "*d7024e.ValueHashtable" {
-		t.Errorf("The hashtable is not of type ValueHashtable")
+		t.Error("The hashtable is not of type ValueHashtable")
 	}
-	fmt.Printf("TestNewValueHashtable finished running with status OK\n")
+	fmt.Println("TestNewValueHashtable finished running with status OK")
 }
 
 func TestHash(t *testing.T) {
@@ -26,9 +26,9 @@ func TestHash(t *testing.T) {
 	h1 := Hash(k1)
 	h2 := Hash(k2)
 	if h1 != h2 {
-		t.Errorf("Hash produced is not consistent with input.")
+		t.Error("Hash produced is not consistent with input.")
 	}
-	fmt.Printf("TestHash finished running with status OK\n")
+	fmt.Println("TestHash finished running with status OK")
 }
 
 func TestPut(t *testing.T) {
@@ -45,16 +45,16 @@ func TestPut(t *testing.T) {
 	it2 := ht.items
 
 	if it != nil || it2 == nil {
-		t.Errorf("Hashtable items wasn't initialized as nil or not made.")
+		t.Error("Hashtable items wasn't initialized as nil or not made.")
 	}
 
 	testitems := make(map[[HashSize]byte][]byte)
 	testitems[k] = v1
 
 	if !reflect.DeepEqual(ht.items, testitems) {
-		t.Errorf("Hashtable didn't put correctly.")
+		t.Error("Hashtable didn't put correctly.")
 	}
-	fmt.Printf("TestPut finished running with status OK\n")
+	fmt.Println("TestPut finished running with status OK")
 }
 
 func TestRemove(t *testing.T) {
@@ -71,9 +71,9 @@ func TestRemove(t *testing.T) {
 	ht.Remove(k)
 
 	if ht.items[k] != nil {
-		t.Errorf("Hashtable didn't remove correctly.")
+		t.Error("Hashtable didn't remove correctly.")
 	}
-	fmt.Printf("TestRemove finished running with status OK\n")
+	fmt.Println("TestRemove finished running with status OK")
 }
 
 func TestGet(t *testing.T) {
@@ -90,9 +90,9 @@ func TestGet(t *testing.T) {
 
 	item := ht.Get(k)
 	if !reflect.DeepEqual(item, v1) {
-		t.Errorf("Hashtable didn't get correctly.")
+		t.Error("Hashtable didn't get correctly.")
 	}
-	fmt.Printf("TestGet finished running with status OK\n")
+	fmt.Println("TestGet finished running with status OK")
 }
 
 func TestSize(t *testing.T) {
@@ -107,7 +107,7 @@ func TestSize(t *testing.T) {
 
 	ht.items = testitems
 	if ht.Size() != 1 {
-		t.Errorf("Hashtable didn't get the correct size.")
+		t.Error("Hashtable didn't get the correct size.")
 	}
-	fmt.Printf("TestSize finished running with status OK\n")
+	fmt.Println("TestSize finished running with status OK")
 }

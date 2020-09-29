@@ -5,10 +5,10 @@ import (
 	"math/rand"
 )
 
-// the static number of bytes in a KademliaID
+// IDLength the static number of bytes in a KademliaID
 const IDLength = 20
 
-// type definition of a KademliaID
+// KademliaID type definition
 type KademliaID [IDLength]byte
 
 // NewKademliaID returns a new instance of a KademliaID based on the string input
@@ -73,7 +73,7 @@ func (kademliaID *KademliaID) String() string {
 	return hex.EncodeToString(kademliaID[0:IDLength])
 }
 
-// Returns an ID which is not itself or a neighbour
+// IDwithinRange returns an ID which is not itself or a neighbour
 func (kademliaID *KademliaID) IDwithinRange() *KademliaID {
 	var flag bool = true
 	var resultKademliaID *KademliaID

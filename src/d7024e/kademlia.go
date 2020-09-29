@@ -1,9 +1,9 @@
 package d7024e
 
 import (
+	"encoding/hex"
 	"fmt"
 	"time"
-	"encoding/hex"
 )
 
 type Kademlia struct {
@@ -57,7 +57,7 @@ func (kademlia *Kademlia) LookupContact(target *Contact) Contact {
 func (kademlia *Kademlia) LookupData(hash [HashSize]byte) []byte {
 	start := time.Now()
 	data := kademlia.net.ht.Get(hash)
-	if (data == nil) {
+	if data == nil {
 		c1 := make(chan []byte)
 		var initiatorList []Contact
 		target := NewContact(NewKademliaID(hex.EncodeToString(hash[:])), "")
@@ -71,7 +71,7 @@ func (kademlia *Kademlia) LookupData(hash [HashSize]byte) []byte {
 	return data
 }
 
-func (kademlia *Kademlia) Store(filename []byte, data []byte) [HashSize]byte{
+func (kademlia *Kademlia) Store(filename []byte, data []byte) [HashSize]byte {
 	start := time.Now()
 	hash := Hash(filename)
 	target := NewContact(NewKademliaID(hex.EncodeToString(hash[:])), "")
@@ -88,7 +88,7 @@ func (kademlia *Kademlia) Store(filename []byte, data []byte) [HashSize]byte{
 	}
 	candidateList.RemoveDuplicates()
 	candidateList.Sort()
-	closestContacts := candidateList.GetContacts(MinInt(bucketSize, candidateList.Len()))
+	closestContacts := candidateList.GetContacts(MinInt(IDLength, candidateList.Len()))
 	for _, contact := range closestContacts {
 		kademlia.net.SendStoreMessage(&contact, hash, data)
 	}
@@ -115,13 +115,13 @@ func (kademlia *Kademlia) goFindNode(target *Contact, contact *Contact, channel 
 				}
 			}
 			if requestList.contacts != nil {
-				worstResult := resultList[len(resultList) - 1]
+				worstResult := resultList[len(resultList)-1]
 				mergeList := requestList
 				mergeList.Append(resultList)
 				mergeList.RemoveDuplicates()
 				mergeList.Sort()
-				worstMergeMaxAllowed := MinInt(bucketSize, mergeList.Len())
-				if !mergeList.GetContacts(worstMergeMaxAllowed)[worstMergeMaxAllowed - 1].Distance.Less(worstResult.Distance) && len(resultList) >= bucketSize {
+				worstMergeMaxAllowed := MinInt(IDLength, mergeList.Len())
+				if !mergeList.GetContacts(worstMergeMaxAllowed)[worstMergeMaxAllowed-1].Distance.Less(worstResult.Distance) && len(resultList) >= IDLength {
 					flag = false
 				} else {
 					resultList = mergeList.GetContacts(worstMergeMaxAllowed)
@@ -136,7 +136,7 @@ func (kademlia *Kademlia) goFindNode(target *Contact, contact *Contact, channel 
 
 func (kademlia *Kademlia) goFindData(hash [HashSize]byte, contact *Contact, channel chan []byte) {
 	data := kademlia.net.SendFindDataMessage(hash, contact)
-	if (data == nil) {
+	if data == nil {
 		target := NewContact(NewKademliaID(hex.EncodeToString(hash[:])), "")
 		queriedList := []Contact{*kademlia.rt.me}
 		var requestList ContactCandidates
@@ -147,7 +147,7 @@ func (kademlia *Kademlia) goFindData(hash [HashSize]byte, contact *Contact, chan
 				if !kademlia.EqualKademliaID(queriedList, &resultList[i]) {
 					queriedList = append(queriedList, resultList[i])
 					data = kademlia.net.SendFindDataMessage(hash, contact)
-					if (data == nil) {
+					if data == nil {
 						currentResponseList := kademlia.net.SendFindContactMessage(target, &resultList[i])
 						requestList.Append(currentResponseList)
 					} else {
@@ -157,13 +157,13 @@ func (kademlia *Kademlia) goFindData(hash [HashSize]byte, contact *Contact, chan
 				}
 			}
 			if requestList.contacts != nil && flag {
-				worstResult := resultList[len(resultList) - 1]
+				worstResult := resultList[len(resultList)-1]
 				mergeList := requestList
 				mergeList.Append(resultList)
 				mergeList.RemoveDuplicates()
 				mergeList.Sort()
-				worstMergeMaxAllowed := MinInt(bucketSize, mergeList.Len())
-				if !mergeList.GetContacts(worstMergeMaxAllowed)[worstMergeMaxAllowed - 1].Distance.Less(worstResult.Distance) && len(resultList) >= bucketSize {
+				worstMergeMaxAllowed := MinInt(IDLength, mergeList.Len())
+				if !mergeList.GetContacts(worstMergeMaxAllowed)[worstMergeMaxAllowed-1].Distance.Less(worstResult.Distance) && len(resultList) >= IDLength {
 					flag = false
 				} else {
 					resultList = mergeList.GetContacts(worstMergeMaxAllowed)

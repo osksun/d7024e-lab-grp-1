@@ -16,7 +16,7 @@ type Network struct {
 }
 
 type msg struct {
-	Message	string
+	Message string
 	Hash    [HashSize]byte
 	Data    []byte
 	Target  Contact
@@ -58,7 +58,7 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 	case "findcontact":
 		// find contact handle
 		mes = "findcontact response"
-		cl = network.rt.FindClosestContacts(m.Target.ID, bucketSize) // K = 20 here
+		cl = network.rt.FindClosestContacts(m.Target.ID, IDLength) // K = 20 here
 	case "finddata":
 		// find data handle
 		d = network.ht.Get(m.Hash)
@@ -92,10 +92,10 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 
 func (network *Network) sendhelper(mes string, hash [HashSize]byte, data []byte, target *Contact, address string) response_msg {
 	tm := msg{
-		Message:	mes,
-		Hash:   	hash,
-		Data:   	data,
-		Sender:  	*network.rt.me,
+		Message: mes,
+		Hash:    hash,
+		Data:    data,
+		Sender:  *network.rt.me,
 	}
 	if target != nil {
 		tm.Target = *target
@@ -181,7 +181,7 @@ func (network *Network) SendFindContactMessage(target *Contact, receiver *Contac
 }
 
 // Retrieves the data from the receiver node using the hash key
-func (network *Network) SendFindDataMessage(hash [HashSize]byte, receiver *Contact) []byte{
+func (network *Network) SendFindDataMessage(hash [HashSize]byte, receiver *Contact) []byte {
 	rm := network.sendhelper("finddata", hash, nil, nil, receiver.Address)
 	return rm.Data
 }
@@ -208,7 +208,7 @@ func (network *Network) VibeCheck(c1 chan response_msg) bool {
 
 func (network *Network) NetAddCont(contact Contact) {
 	// if bucket is full
-	if network.rt.buckets[network.rt.getBucketIndex(contact.ID)].Len() == bucketSize {
+	if network.rt.buckets[network.rt.getBucketIndex(contact.ID)].Len() == IDLength {
 		// get last in list
 		var last = network.rt.buckets[network.rt.getBucketIndex(contact.ID)].GetLast()
 		// if it's not alive then we add, else we don't

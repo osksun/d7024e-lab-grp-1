@@ -86,5 +86,5 @@ func main() {
 
 	targetContact := nodes[125].Contact()
 	nodes[0].SpinupNode(targetContact)
-	for {}
+	for ﻿{}
 }

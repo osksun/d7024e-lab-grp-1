@@ -22,36 +22,44 @@ func TestNewBucket(t *testing.T) {
 	if bType != "*d7024e.bucket" {
 		t.Errorf("The bucket is not of type bucket")
 	}
+	fmt.Printf("TestNewBucket finished running with status OK\n")
 }
 
-// }
-// // newBucket returns a new instance of a bucket
-// func newBucket() *bucket {
-// 	bucket := &bucket{}
-// 	bucket.list = list.New()
-// 	return bucket
-// }
+func TestAddContact(t *testing.T) {
+	nct := *NewContact(NewKademliaID("FFFFFFFF00000000000000000000000000000000"), "localhost:8001")
+	nct2 := *NewContact(NewKademliaID("FFFFFFF000000000000000000000000000000000"), "localhost:8002")
+	bucket := newBucket()
+	ls1 := bucket.Len()
+	bucket.AddContact(nct)
+	ls2 := bucket.Len()
+	if !(ls1 < ls2) {
+		t.Errorf("Bucket size didn't increase when adding as it should.")
+	}
+	bucket.AddContact(nct2)
+	bucket.AddContact(nct)
+	if bucket.GetFirst().ID != nct.ID {
+		t.Errorf("Bucket didn't move the contact to the front.")
+	}
+	fmt.Printf("TestAddContact finished running with status OK\n")
+}
 
-// // AddContact adds the Contact to the front of the bucket
-// // or moves it to the front of the bucket if it already existed
-// func (bucket *bucket) AddContact(contact Contact) {
-// 	var element *list.Element
-// 	for e := bucket.list.Front(); e != nil; e = e.Next() {
-// 		nodeID := e.Value.(Contact).ID
+func TestGetContactAndCalcDistance(t *testing.T) {
+	nct := *NewContact(NewKademliaID("FFFFFFFF00000000000000000000000000000000"), "localhost:8001")
+	nct2 := *NewContact(NewKademliaID("FFFFFFF000000000000000000000000000000000"), "localhost:8002")
+	bucket := newBucket()
+	bucket.AddContact(nct)
+	bucket.AddContact(nct2)
+	kdid := NewKademliaID("0000000000000000000000000000000000000000")
+	contacts := bucket.GetContactAndCalcDistance(kdid)
 
-// 		if (contact).ID.Equals(nodeID) {
-// 			element = e
-// 		}
-// 	}
-
-// 	if element == nil {
-// 		if bucket.list.Len() < bucketSize {
-// 			bucket.list.PushFront(contact)
-// 		}
-// 	} else {
-// 		bucket.list.MoveToFront(element)
-// 	}
-// }
+	if len(contacts) != 2 {
+		t.Errorf("Bucket didn't return all of the contacts")
+	}
+	if contacts[0].Distance.String() != "fffffff000000000000000000000000000000000" || contacts[1].Distance.String() != "ffffffff00000000000000000000000000000000" {
+		t.Errorf("Bucket didn't calculate the distance correctly.")
+	}
+	fmt.Printf("TestGetContactAndCalcDistance finished running with status OK\n")
+}
 
 // // GetContactAndCalcDistance returns an array of Contacts where
 // // the distance has already been calculated

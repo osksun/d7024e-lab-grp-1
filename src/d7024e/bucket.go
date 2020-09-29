@@ -2,21 +2,12 @@ package d7024e
 
 import (
 	"container/list"
-	"fmt"
 )
 
 // bucket definition
 // contains a List
 type bucket struct {
 	list *list.List
-}
-
-func Shitty() {
-	bucket := newBucket()
-	lType := fmt.Sprintf("%T", bucket.list)
-	bType := fmt.Sprintf("%T", bucket)
-	fmt.Println("lTYPE: ", lType)
-	fmt.Println("bTYPE: ", bType)
 }
 
 // newBucket returns a new instance of a bucket
@@ -69,5 +60,11 @@ func (bucket *bucket) Len() int {
 func (bucket *bucket) GetLast() Contact {
 	var contact Contact
 	contact = bucket.list.Back().Value.(Contact)
+	return contact
+}
+
+func (bucket *bucket) GetFirst() Contact {
+	var contact Contact
+	contact = bucket.list.Front().Value.(Contact)
 	return contact
 }

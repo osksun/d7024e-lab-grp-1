@@ -73,7 +73,7 @@ func TestGetLast(t *testing.T) {
 	bucket.AddContact(nct)
 	bucket.AddContact(nct2)
 
-	if bucket.GetLast().ID.String() != "FFFFFFFF00000000000000000000000000000000" {
+	if bucket.GetLast().ID != nct.ID {
 		t.Errorf("Bucket didn't get the last correct element.")
 	}
 	fmt.Printf("TestGetLast finished running with status OK\n")
@@ -86,7 +86,7 @@ func TestGetFirst(t *testing.T) {
 	bucket.AddContact(nct)
 	bucket.AddContact(nct2)
 
-	if bucket.GetFirst().ID.String() != "FFFFFFF000000000000000000000000000000000" {
+	if bucket.GetFirst().ID != nct2.ID {
 		t.Errorf("Bucket didn't get the first correct element.")
 	}
 	fmt.Printf("TestGetFirst finished running with status OK\n")

@@ -1,11 +1,12 @@
 package d7024e
 
 import (
-	"fmt"
+	//"fmt"
 	"testing"
 )
 
 func TestRoutingTable(t *testing.T) {
+	/*
 	rt := NewRoutingTable(NewContact(NewKademliaID("FFFFFFFF00000000000000000000000000000000"), "localhost:8000"))
 
 	rt.AddContact(*NewContact(NewKademliaID("FFFFFFFF00000000000000000000000000000000"), "localhost:8001"))
@@ -19,4 +20,5 @@ func TestRoutingTable(t *testing.T) {
 	for i := range contacts {
 		fmt.Println(contacts[i].String())
 	}
+	*/
 }

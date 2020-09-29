@@ -62,3 +62,9 @@ func (bucket *bucket) GetLast() Contact {
 	contact = bucket.list.Back().Value.(Contact)
 	return contact
 }
+
+func (bucket *bucket) GetFirst() Contact {
+	var contact Contact
+	contact = bucket.list.Front().Value.(Contact)
+	return contact
+}

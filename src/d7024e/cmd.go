@@ -9,7 +9,7 @@ type Cmd struct {
 	triggers []string
 	description string
 	usage string
-	action func(cli *Cli, args ...string)
+	action func(cli *Cli, args ...string) string
 }
 
 // matches checks if given input matches any trigger of the command

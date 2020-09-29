@@ -10,7 +10,7 @@ func TestNewKademliaID(t *testing.T) {
 	validKademliaID, err1 := NewKademliaID(validID)
 	kIDType := fmt.Sprintf("%T", validKademliaID)
 	if kIDType != "*d7024e.KademliaID" {
-		t.Errorf("The returned id is not of type kademliaID")
+		t.Errorf("The returned object is not of type \"*d7024e.KademliaID\"")
 	}
 	if err1 != nil {
 		t.Error(err1)
@@ -26,7 +26,7 @@ func TestNewRandomKademliaID(t *testing.T) {
 	kID := NewRandomKademliaID()
 	kIDType := fmt.Sprintf("%T", kID)
 	if kIDType != "*d7024e.KademliaID" {
-		t.Errorf("The returned id is not of type kademliaID")
+		t.Errorf("The returned object is not of type \"*d7024e.KademliaID\"")
 	}
 }
 
@@ -105,12 +105,12 @@ func TestIDWithinRange(t *testing.T) {
 	newKademliaID := myKademliaID.IDWithinRange()
 	kIDType := fmt.Sprintf("%T", newKademliaID)
 	if kIDType != "*d7024e.KademliaID" {
-		t.Errorf("The returned id is not of type kademliaID")
+		t.Errorf("The returned object is not of type \"*d7024e.KademliaID\"")
 	}
 	if newKademliaID.Equals(myKademliaID)  {
-		t.Errorf("The returned ID \"%s\" was equal to the object's kademliaID", newKademliaID.String())
+		t.Errorf("The returned ID \"%s\" was equal to the object's KademliaID", newKademliaID.String())
 	}
 	if newKademliaID.Equals(neighbourKademliaID) {
-		t.Errorf("The returned ID \"%s\" was equal to the object's neighbour's kademliaID", neighbourKademliaID.String())
+		t.Errorf("The returned ID \"%s\" was equal to the object's neighbour's KademliaID", neighbourKademliaID.String())
 	}
 }

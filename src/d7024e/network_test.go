@@ -66,6 +66,8 @@ func TestHandleSender(t *testing.T) {
 	fmt.Println("TestHandleSender finished running with status OK")
 }
 
+// Not sure how to test this one
+
 // // I guess you need to run this function as a go func
 // func (network *Network) Listen(address string, serveMux *http.ServeMux) {
 // 	fmt.Println("Server starting on:", address)
@@ -178,10 +180,9 @@ func TestSendStoreMessage(t *testing.T) {
 	fmt.Println("TestSendStoreMessage finished running with status OK")
 }
 
-// // Tells the receiving node to store the data
-// func (network *Network) SendStoreMessage(receiver *Contact, hash [HashSize]byte, data []byte) {
-// 	network.sendhelper("store", hash, data, nil, receiver.Address)
-// }
+func TestVibeCheck(t *testing.T) {
+
+}
 
 // func (network *Network) VibeCheck(c1 chan response_msg) bool {
 // 	select {

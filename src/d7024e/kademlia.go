@@ -21,12 +21,6 @@ func NewKademlia(net *Network, rt *RoutingTable, alpha int) *Kademlia {
 	return kademlia
 }
 
-func printContacts(contacts []Contact) {
-	for i, contact := range contacts {
-		fmt.Println(i, contact.String(), "distance:", contact.Distance)
-	}
-}
-
 func (kademlia *Kademlia) LookupContact(target *Contact) Contact {
 	start := time.Now()
 	c1 := make(chan []Contact)
@@ -100,11 +94,11 @@ func (kademlia *Kademlia) Store(filename []byte, data []byte) [HashSize]byte {
 
 func (kademlia *Kademlia) goFindNode(target *Contact, contact *Contact, channel chan []Contact) {
 	queriedList := []Contact{*kademlia.rt.me}
-	var requestList ContactCandidates
 	var resultList = kademlia.net.SendFindContactMessage(target, contact)
 	if !resultList[0].Distance.EqualsZero() {
 		var flag = true
 		for ok := true; ok; ok = flag {
+			var requestList ContactCandidates
 			for i := 0; i < len(resultList); i++ {
 				if !kademlia.EqualKademliaID(queriedList, &resultList[i]) {
 					queriedList = append(queriedList, resultList[i])

@@ -1,7 +1,11 @@
 package d7024e
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -20,9 +24,9 @@ func TestNewNetwork(t *testing.T) {
 	n := NewNetwork(rt, ht)
 	nType := fmt.Sprintf("%T", n)
 	if nType != "*d7024e.Network" {
-		t.Errorf("The network is not of type network")
+		t.Error("The network is not of type network")
 	}
-	fmt.Printf("TestNewNetwork finished running with status OK\n")
+	fmt.Println("TestNewNetwork finished running with status OK")
 }
 
 type TestHttpHandler struct {
@@ -35,6 +39,8 @@ func (h *TestHttpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func TestHandleListen(t *testing.T) {
 	kID1, _ := NewKademliaID("FFFFFFFF00000000000000000000000000000000")
 	nct := NewContact(kID1, "localhost:8001")
+	kID2, _ := NewKademliaID("FFFFFFF000000000000000000000000000000000")
+	nct2 := NewContact(kID2, "localhost:8002")
 	rt := NewRoutingTable(nct)
 	ht := NewValueHashtable()
 	n := NewNetwork(rt, ht)
@@ -42,15 +48,61 @@ func TestHandleListen(t *testing.T) {
 
 	server := httptest.NewServer(h)
 	defer server.Close()
-	fmt.Println(server.URL)
+
 	// Make a test request
-	resp, err := http.POST(server.URL)
-	if err != nil {
-		t.Fatal(err)
+
+	// Make a request body and then send and rest responses (basically the different sends)
+
+	tm := msg{
+		Hash:   Hash([]byte("something")),
+		Data:   []byte("data"),
+		Target: *nct2,
+		Sender: *n.rt.me,
 	}
-	if resp.StatusCode != 200 {
-		t.Fatalf("Received non-200 response: %d\n", resp.StatusCode)
+
+	test_messages := [5]string{"ping", "findcontact", "finddata", "store", "invalidmessage"}
+	expected_response := [5]string{"Response from ping", "Response from findcontact", "Response from finddata", "Response from store", "Response invalid message"}
+
+	for i := 0; i < len(test_messages); i++ {
+		tm.Message = test_messages[i]
+
+		requestBody, err := json.Marshal(tm)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		resp, err := http.Post(server.URL, "message", bytes.NewBuffer(requestBody))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if resp.StatusCode != 200 {
+			t.Fatalf("Received non-200 response: %d\n", resp.StatusCode)
+		}
+
+		defer resp.Body.Close()
+
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		// Unmarshals
+		var rm = response_msg{
+			Message:     "error",
+			ContactList: nil,
+			Data:        nil,
+			Responder:   Contact{},
+		}
+		err1 := json.Unmarshal(body, &rm)
+		if err1 != nil {
+			log.Println(err1)
+		}
+
+		if rm.Message != expected_response[i] {
+			t.Errorf("Sender didn't get the expected response. %s", expected_response[i])
+		}
 	}
+	fmt.Println("TestHandleListen finished running with status OK")
 }
 
 // // Helper function for listen

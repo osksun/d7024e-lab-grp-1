@@ -57,7 +57,7 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 		mes = "Response from ping"
 	case "findcontact":
 		// find contact handle
-		mes = "findcontact response"
+		mes = "Response from findcontact"
 		cl = network.rt.FindClosestContacts(m.Target.ID, IDLength) // K = 20 here
 	case "finddata":
 		// find data handle
@@ -70,7 +70,7 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 		mes = "Response from store"
 	default:
 		log.Println("server received an invalid message")
-		mes = "Response: invalid message"
+		mes = "Response invalid message"
 	}
 
 	rm := response_msg{

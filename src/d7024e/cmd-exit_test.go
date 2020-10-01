@@ -8,7 +8,7 @@ import (
 )
 
 func TestExit(t *testing.T) {
-	node := NewNode("localhost:0000")
+	node := NewNode("localhost:0000", "")
 	cli := NewCli(node, strings.NewReader("exit\n"))
 	if os.Getenv("BE_EXIT") == "1" {
 		cli.Run(true, false)

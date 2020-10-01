@@ -9,7 +9,7 @@ import (
 )
 
 func TestNewCli(t *testing.T) {
-	node := NewNode("localhost:0000")
+	node := NewNode("localhost:0000", "")
 	cli := NewCli(node, os.Stdin)
 	cliType := fmt.Sprintf("%T", cli)
 	if cliType != "*d7024e.Cli" {
@@ -30,7 +30,7 @@ func TestNewCli(t *testing.T) {
 }
 
 func TestRun(t *testing.T) {
-	node := NewNode("localhost:0000")
+	node := NewNode("localhost:0000", "")
 
 	cli1 := NewCli(node, strings.NewReader("help\n"))
 	statusCode1 := cli1.Run(true, false)
@@ -73,7 +73,7 @@ func TestRun(t *testing.T) {
 
 func TestGetInput(t *testing.T) {
 	input := "test"
-	node := NewNode("localhost:0000")
+	node := NewNode("localhost:0000", "")
 	cli := NewCli(node, strings.NewReader(input + "\n"))
 	returnedInput := cli.getInput()
 	if returnedInput != input {
@@ -82,7 +82,7 @@ func TestGetInput(t *testing.T) {
 }
 
 func TestHandleInput(t *testing.T) {
-	node := NewNode("localhost:0000")
+	node := NewNode("localhost:0000", "")
 
 	input1 := "exit"
 	cli1 := NewCli(node, os.Stdin)

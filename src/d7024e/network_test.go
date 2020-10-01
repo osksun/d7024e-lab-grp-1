@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
+	"time"
 )
 
 // type Network struct {
@@ -57,54 +59,12 @@ func TestHandleSender(t *testing.T) {
 		rm := n.sendhelper(mes, hash, data, &target, server.URL)
 
 		if rm.Message != expected_response[i] {
-			t.Errorf("Sender didn't get the expected response. %s", expected_response[i])
+			t.Errorf("Sender got '%s' want '%s'", rm.Message, expected_response[i])
 		}
 
 	}
 	fmt.Println("TestHandleSender finished running with status OK")
 }
-
-// func (network *Network) sendhelper(mes string, hash [HashSize]byte, data []byte, target *Contact, address string) response_msg {
-// 	tm := msg{
-// 		Message: mes,
-// 		Hash:    hash,
-// 		Data:    data,
-// 		Sender:  *network.rt.me,
-// 	}
-// 	if target != nil {
-// 		tm.Target = *target
-// 	}
-// 	requestBody, err := json.Marshal(tm)
-// 	if err != nil {
-// 		log.Fatalln(err)
-// 	}
-
-// 	resp, err := http.Post("http://"+address+"/msg", "message", bytes.NewBuffer(requestBody))
-// 	if err != nil {
-// 		log.Fatalln(err)
-// 		// maybe ping fail should be here
-// 	}
-
-// 	defer resp.Body.Close()
-
-// 	body, err := ioutil.ReadAll(resp.Body)
-// 	if err != nil {
-// 		log.Fatalln(err)
-// 	}
-
-// 	// Unmarshals
-// 	var rm = response_msg{
-// 		Message:     "error",
-// 		ContactList: nil,
-// 		Data:        nil,
-// 		Responder:   Contact{},
-// 	}
-// 	err1 := json.Unmarshal(body, &rm)
-// 	if err1 != nil {
-// 		log.Println(err1)
-// 	}
-// 	return rm
-// }
 
 // // I guess you need to run this function as a go func
 // func (network *Network) Listen(address string, serveMux *http.ServeMux) {
@@ -113,52 +73,110 @@ func TestHandleSender(t *testing.T) {
 // 	log.Fatal(http.ListenAndServe(address, serveMux))
 // }
 
-// func (network *Network) SendPingMessage(receiver *Contact) bool {
-// 	// TODO
-// 	c1 := make(chan response_msg, 1)
-// 	c2 := make(chan response_msg, 1)
-// 	go func() {
-// 		var nilHash [20]byte
-// 		rm := network.sendhelper("ping", nilHash, nil, nil, receiver.Address)
-// 		c1 <- rm
-// 		c2 <- rm
-// 	}()
+func TestSendPing(t *testing.T) {
+	kID1, _ := NewKademliaID("FFFFFFFF00000000000000000000000000000000")
+	nct := NewContact(kID1, "localhost:8001")
+	rt := NewRoutingTable(nct)
+	ht := NewValueHashtable()
+	n := NewNetwork(rt, ht)
 
-// 	if network.VibeCheck(c1) {
-// 		//rm := <-c2
-// 		//network.rt.AddContact(rm.Responder)
-// 		return true
-// 	}
-// 	return false
-// }
+	kID2, _ := NewKademliaID("FFFFFFF000000000000000000000000000000000")
+	nct2 := NewContact(kID2, "localhost:8002")
+	rt2 := NewRoutingTable(nct2)
+	ht2 := NewValueHashtable()
+	n2 := NewNetwork(rt2, ht2)
 
-// func (network *Network) SendFindContactMessage(target *Contact, receiver *Contact) []Contact {
-// 	// TODO
-// 	c1 := make(chan response_msg, 1)
-// 	c2 := make(chan response_msg, 1)
-// 	go func() {
-// 		var nilHash [20]byte
-// 		rm := network.sendhelper("findcontact", nilHash, nil, target, receiver.Address)
-// 		c1 <- rm
-// 		c2 <- rm
-// 	}()
+	go n2.Listen(n2.rt.me.Address, http.NewServeMux())
+	time.Sleep(1 * time.Second)
+	resp := n.SendPingMessage(nct2)
+	if resp != true {
+		t.Error("SendPingMessage failed the test.")
+	}
+	fmt.Println("TestSendPing finished running with status OK")
+}
 
-// 	if network.VibeCheck(c1) {
-// 		rm := <-c2
-// 		go network.NetAddCont(rm.Responder)
-// 		if rm.ContactList == nil {
-// 			log.Println("Error: node has no contacts and returns nil")
-// 		}
-// 		return rm.ContactList
-// 	}
-// 	return nil
-// }
+func TestSendFindContactMessage(t *testing.T) {
+	kID1, _ := NewKademliaID("FFFFFFFF00000000000000000000000000000000")
+	nct := NewContact(kID1, "localhost:8001")
+	rt := NewRoutingTable(nct)
+	ht := NewValueHashtable()
+	n := NewNetwork(rt, ht)
 
-// // Retrieves the data from the receiver node using the hash key
-// func (network *Network) SendFindDataMessage(hash [HashSize]byte, receiver *Contact) []byte {
-// 	rm := network.sendhelper("finddata", hash, nil, nil, receiver.Address)
-// 	return rm.Data
-// }
+	kID2, _ := NewKademliaID("FFFFFFF000000000000000000000000000000000")
+	nct2 := NewContact(kID2, "localhost:8003")
+	rt2 := NewRoutingTable(nct2)
+	ht2 := NewValueHashtable()
+	n2 := NewNetwork(rt2, ht2)
+
+	kID3, _ := NewKademliaID("FFFFFF0000000000000000000000000000000000")
+	nct3 := NewContact(kID3, "localhost:8004")
+
+	n2.rt.AddContact(*nct3)
+
+	go n2.Listen(n2.rt.me.Address, http.NewServeMux())
+	time.Sleep(1 * time.Second)
+	resp := n.SendFindContactMessage(nct3, nct2)
+	if len(resp) != 1 {
+		t.Error("SendFindContactMessage failed the test.")
+	}
+	fmt.Println("TestSendFindContactMessage finished running with status OK")
+}
+
+func TestSendFindDataMessage(t *testing.T) {
+	kID1, _ := NewKademliaID("FFFFFFFF00000000000000000000000000000000")
+	nct := NewContact(kID1, "localhost:8001")
+	rt := NewRoutingTable(nct)
+	ht := NewValueHashtable()
+	n := NewNetwork(rt, ht)
+
+	kID2, _ := NewKademliaID("FFFFFFF000000000000000000000000000000000")
+	nct2 := NewContact(kID2, "localhost:8004")
+	rt2 := NewRoutingTable(nct2)
+	ht2 := NewValueHashtable()
+	n2 := NewNetwork(rt2, ht2)
+
+	go n2.Listen(n2.rt.me.Address, http.NewServeMux())
+	time.Sleep(1 * time.Second)
+
+	data := []byte("data")
+	key := "key"
+	hash := Hash([]byte(key))
+
+	n2.ht.Put(hash, data)
+
+	resp := n.SendFindDataMessage(hash, nct2)
+	if reflect.DeepEqual(resp, data) == false {
+		t.Error("SendFindDataMessage failed the test.")
+	}
+	fmt.Println("TestSendFindDataMessage finished running with status OK")
+}
+
+func TestSendStoreMessage(t *testing.T) {
+	kID1, _ := NewKademliaID("FFFFFFFF00000000000000000000000000000000")
+	nct := NewContact(kID1, "localhost:8001")
+	rt := NewRoutingTable(nct)
+	ht := NewValueHashtable()
+	n := NewNetwork(rt, ht)
+
+	kID2, _ := NewKademliaID("FFFFFFF000000000000000000000000000000000")
+	nct2 := NewContact(kID2, "localhost:8005")
+	rt2 := NewRoutingTable(nct2)
+	ht2 := NewValueHashtable()
+	n2 := NewNetwork(rt2, ht2)
+
+	go n2.Listen(n2.rt.me.Address, http.NewServeMux())
+	time.Sleep(1 * time.Second)
+
+	data := []byte("data")
+	key := "key"
+	hash := Hash([]byte(key))
+
+	n.SendStoreMessage(nct2, hash, data)
+	if reflect.DeepEqual(n2.ht.Get(hash), data) == false {
+		t.Error("SendStoreMessage failed the test.")
+	}
+	fmt.Println("TestSendStoreMessage finished running with status OK")
+}
 
 // // Tells the receiving node to store the data
 // func (network *Network) SendStoreMessage(receiver *Contact, hash [HashSize]byte, data []byte) {

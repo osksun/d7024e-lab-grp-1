@@ -1,11 +1,7 @@
 package d7024e
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -36,7 +32,7 @@ type TestHttpHandler struct {
 func (h *TestHttpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.n.handleListen(w, r)
 }
-func TestHandleListen(t *testing.T) {
+func TestHandleSender(t *testing.T) {
 	kID1, _ := NewKademliaID("FFFFFFFF00000000000000000000000000000000")
 	nct := NewContact(kID1, "localhost:8001")
 	kID2, _ := NewKademliaID("FFFFFFF000000000000000000000000000000000")
@@ -49,124 +45,24 @@ func TestHandleListen(t *testing.T) {
 	server := httptest.NewServer(h)
 	defer server.Close()
 
-	// Make a test request
-<<<<<<< HEAD
-
-	// Make a request body and then send and rest responses (basically the different sends)
-
-	tm := msg{
-		Hash:   Hash([]byte("something")),
-		Data:   []byte("data"),
-		Target: *nct2,
-		Sender: *n.rt.me,
-=======
-	/*
-	resp, err := http.POST(server.URL)
-	if err != nil {
-		t.Fatal(err)
->>>>>>> 41fc85e29ca861b6b0c2414c24b55fa152d8a183
-	}
+	hash := Hash([]byte("something"))
+	data := []byte("data")
+	target := *nct2
 
 	test_messages := [5]string{"ping", "findcontact", "finddata", "store", "invalidmessage"}
 	expected_response := [5]string{"Response from ping", "Response from findcontact", "Response from finddata", "Response from store", "Response invalid message"}
 
 	for i := 0; i < len(test_messages); i++ {
-		tm.Message = test_messages[i]
-
-		requestBody, err := json.Marshal(tm)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		resp, err := http.Post(server.URL, "message", bytes.NewBuffer(requestBody))
-		if err != nil {
-			t.Fatal(err)
-		}
-		if resp.StatusCode != 200 {
-			t.Fatalf("Received non-200 response: %d\n", resp.StatusCode)
-		}
-
-		defer resp.Body.Close()
-
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Fatalln(err)
-		}
-
-		// Unmarshals
-		var rm = response_msg{
-			Message:     "error",
-			ContactList: nil,
-			Data:        nil,
-			Responder:   Contact{},
-		}
-		err1 := json.Unmarshal(body, &rm)
-		if err1 != nil {
-			log.Println(err1)
-		}
+		mes := test_messages[i]
+		rm := n.sendhelper(mes, hash, data, &target, server.URL)
 
 		if rm.Message != expected_response[i] {
 			t.Errorf("Sender didn't get the expected response. %s", expected_response[i])
 		}
+
 	}
-<<<<<<< HEAD
-	fmt.Println("TestHandleListen finished running with status OK")
-=======
-	*/
->>>>>>> 41fc85e29ca861b6b0c2414c24b55fa152d8a183
+	fmt.Println("TestHandleSender finished running with status OK")
 }
-
-// // Helper function for listen
-// func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) {
-// 	decoder := json.NewDecoder(req.Body)
-// 	var m msg
-// 	err := decoder.Decode(&m)
-// 	if err != nil {
-// 		log.Println(err)
-// 	}
-
-// 	var mes string
-// 	var cl []Contact = nil
-// 	var d []byte = nil
-// 	// depending on what message we got we run different
-// 	switch m.Message {
-// 	case "ping":
-// 		// ping handle
-// 		mes = "Response from ping"
-// 	case "findcontact":
-// 		// find contact handle
-// 		mes = "findcontact response"
-// 		cl = network.rt.FindClosestContacts(m.Target.ID, IDLength) // K = 20 here
-// 	case "finddata":
-// 		// find data handle
-// 		d = network.ht.Get(m.Hash)
-// 		mes = "Response from finddata"
-// 	case "store":
-// 		// store handle
-// 		// PUT NEEDS A STRING KEY ASSOCIATED WITH THE DATA
-// 		network.ht.Put(m.Hash, m.Data)
-// 		mes = "Response from store"
-// 	default:
-// 		log.Println("server received an invalid message")
-// 		mes = "Response: invalid message"
-// 	}
-
-// 	rm := response_msg{
-// 		Message:     mes,
-// 		ContactList: cl,
-// 		Data:        d,
-// 		Responder:   *network.rt.me,
-// 	}
-
-// 	r, err := json.Marshal(rm)
-// 	if err != nil {
-// 		log.Print(err)
-// 	}
-// 	// adds RPC sender to list
-// 	go network.NetAddCont(m.Sender)
-
-// 	fmt.Fprintf(rw, string(r))
-// }
 
 // func (network *Network) sendhelper(mes string, hash [HashSize]byte, data []byte, target *Contact, address string) response_msg {
 // 	tm := msg{

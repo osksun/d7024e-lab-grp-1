@@ -105,7 +105,7 @@ func (network *Network) sendhelper(mes string, hash [HashSize]byte, data []byte,
 		log.Fatalln(err)
 	}
 
-	resp, err := http.Post("http://"+address+"/msg", "message", bytes.NewBuffer(requestBody))
+	resp, err := http.Post(address, "message", bytes.NewBuffer(requestBody))
 	if err != nil {
 		log.Fatalln(err)
 		// maybe ping fail should be here
@@ -145,7 +145,7 @@ func (network *Network) SendPingMessage(receiver *Contact) bool {
 	c2 := make(chan response_msg, 1)
 	go func() {
 		var nilHash [20]byte
-		rm := network.sendhelper("ping", nilHash, nil, nil, receiver.Address)
+		rm := network.sendhelper("ping", nilHash, nil, nil, "http://"+receiver.Address+"/msg")
 		c1 <- rm
 		c2 <- rm
 	}()
@@ -164,7 +164,7 @@ func (network *Network) SendFindContactMessage(target *Contact, receiver *Contac
 	c2 := make(chan response_msg, 1)
 	go func() {
 		var nilHash [20]byte
-		rm := network.sendhelper("findcontact", nilHash, nil, target, receiver.Address)
+		rm := network.sendhelper("findcontact", nilHash, nil, target, "http://"+receiver.Address+"/msg")
 		c1 <- rm
 		c2 <- rm
 	}()
@@ -182,13 +182,13 @@ func (network *Network) SendFindContactMessage(target *Contact, receiver *Contac
 
 // Retrieves the data from the receiver node using the hash key
 func (network *Network) SendFindDataMessage(hash [HashSize]byte, receiver *Contact) []byte {
-	rm := network.sendhelper("finddata", hash, nil, nil, receiver.Address)
+	rm := network.sendhelper("finddata", hash, nil, nil, "http://"+receiver.Address+"/msg")
 	return rm.Data
 }
 
 // Tells the receiving node to store the data
 func (network *Network) SendStoreMessage(receiver *Contact, hash [HashSize]byte, data []byte) {
-	network.sendhelper("store", hash, data, nil, receiver.Address)
+	network.sendhelper("store", hash, data, nil, "http://"+receiver.Address+"/msg")
 }
 
 func (network *Network) VibeCheck(c1 chan response_msg) bool {

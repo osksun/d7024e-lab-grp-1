@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+	"os"
 )
 
 type Node struct {
@@ -40,7 +41,7 @@ func (node *Node) SpinupNode(target *Contact) {
 		data := node.kademlia.LookupData(hash)
 		fmt.Printf("Data found: \"%s\"", string(data))
 		*/
-		NewCli(node).Run()
+		NewCli(node, os.Stdin).Run(false, true)
 	}
 	//time.Sleep(2 * time.Second)
 

@@ -72,7 +72,7 @@ func (candidates *ContactCandidates) Less(i, j int) bool {
 	return candidates.contacts[i].Less(&candidates.contacts[j])
 }
 
-// RemoveDuplicates removes duplicate contacts
+// RemoveDuplicates removes duplicate contacts based on address values
 func (candidates *ContactCandidates) RemoveDuplicates() {
 	keys := make(map[string]bool)
 	list := []Contact{}

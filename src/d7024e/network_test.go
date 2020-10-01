@@ -50,6 +50,7 @@ func TestHandleListen(t *testing.T) {
 	defer server.Close()
 
 	// Make a test request
+<<<<<<< HEAD
 
 	// Make a request body and then send and rest responses (basically the different sends)
 
@@ -58,6 +59,12 @@ func TestHandleListen(t *testing.T) {
 		Data:   []byte("data"),
 		Target: *nct2,
 		Sender: *n.rt.me,
+=======
+	/*
+	resp, err := http.POST(server.URL)
+	if err != nil {
+		t.Fatal(err)
+>>>>>>> 41fc85e29ca861b6b0c2414c24b55fa152d8a183
 	}
 
 	test_messages := [5]string{"ping", "findcontact", "finddata", "store", "invalidmessage"}
@@ -102,7 +109,11 @@ func TestHandleListen(t *testing.T) {
 			t.Errorf("Sender didn't get the expected response. %s", expected_response[i])
 		}
 	}
+<<<<<<< HEAD
 	fmt.Println("TestHandleListen finished running with status OK")
+=======
+	*/
+>>>>>>> 41fc85e29ca861b6b0c2414c24b55fa152d8a183
 }
 
 // // Helper function for listen

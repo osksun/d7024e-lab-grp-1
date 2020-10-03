@@ -84,3 +84,24 @@ func (candidates *ContactCandidates) RemoveDuplicates() {
 	}
 	candidates.contacts = list
 }
+
+// remove removes a contact by given *KademliaID, the order of the list will not be maintained
+func (candidates *ContactCandidates) remove(kademliaID *KademliaID) {
+	for i, contact := range candidates.contacts {
+		if contact.ID.Equals(kademliaID) {
+			candidates.contacts [i] = candidates.contacts [len(candidates.contacts ) - 1]
+			candidates.contacts = candidates.contacts[:len(candidates.contacts ) - 1]
+		}
+	}
+}
+
+// removeContact removes a contact by given *KademliaID, the order of the list will not be maintained
+func removeContact(contacts []*Contact, kademliaID *KademliaID) []*Contact{
+	for i, contact := range contacts {
+		if contact.ID.Equals(kademliaID) {
+			contacts[i] = contacts[len(contacts) - 1]
+			return contacts[:len(contacts) - 1]
+		}
+	}
+	return contacts
+}

@@ -45,30 +45,6 @@ func (node *Node) AddContact(contact *Contact) {
 	node.rt.AddContact(*contact)
 }
 
-func (node *Node) JoinNetwork(address string) {
-	// TODO Check if node is participating or not
-	var refreshContact Contact // dummy contact only used for looking up random ID
-	kademliaID := NewRandomKademliaID()
-	node.contact = NewContact(kademliaID, node.contact.Address)
-	//node.net.SendPingMessage(address, kademliaID)
-	var nConnections = 0
-	var nodeBuckets = node.rt.Buckets()
-	node.kademlia.LookupContact(node.contact)
-	for i := 0; i < len(nodeBuckets); i++ {
-		nConnections += nodeBuckets[i].Len()
-	}
-	fmt.Println("Connections after 1st lookup: ", nConnections)
-	refreshContact.ID = node.contact.ID.IDWithinRange()
-	node.kademlia.LookupContact(&refreshContact)
-
-	nConnections = 0
-	for i := 0; i < len(nodeBuckets); i++ {
-		nConnections += nodeBuckets[i].Len()
-	}
-	fmt.Println("Connections after 2nd lookup: ", nConnections)
-
-}
-
 // Contact returns the contact of the node
 func (node *Node) Contact() *Contact {
 	return node.contact

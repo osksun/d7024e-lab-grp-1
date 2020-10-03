@@ -14,8 +14,8 @@ func Get() Cmd{
 			filenameHashSlice, _ := hex.DecodeString(args[0])
 			var filenameHash [HashSize]byte
 			copy(filenameHash[:], filenameHashSlice)
-			data := cli.node.kademlia.LookupData(filenameHash)
-			return "Returned content: \"" + string(data) + "\""
+			//data := cli.node.kademlia.LookupData(filenameHash)
+			return "Returned content: \""// + string(data) + "\""
 		},
 	}
 }

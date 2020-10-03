@@ -1,8 +1,8 @@
 package d7024e
 
 import (
-	"strings"
-	"encoding/hex"
+	//"strings"
+	//"encoding/hex"
 )
 
 // Put command for the cli
@@ -12,10 +12,10 @@ func Put() Cmd{
 		description: "Upload content",
 		usage: "\"put filename content...\", \"p filename content...\"",
 		action: func(cli *Cli, args ...string) string {
-			filename := []byte(args[0])
-			content := []byte(strings.Join(args[1:len(args)], " "))
-			hash := cli.node.kademlia.Store(filename, content)
-			return "Returned hash (hex): \"" + hex.EncodeToString(hash[:]) + "\"\n"
+			//filename := []byte(args[0])
+			//content := []byte(strings.Join(args[1:len(args)], " "))
+			//hash := cli.node.kademlia.Store(filename, content)
+			return "Returned hash (hex): \""// + hex.EncodeToString(hash[:]) + "\"\n"
 		},
 	}
 }

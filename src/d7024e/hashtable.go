@@ -1,20 +1,10 @@
 package d7024e
 // This code is taken from
 // https://flaviocopes.com/golang-data-structure-hashtable/
-// modified to use the static types string and []byte for key and value instead of the suggested generic types
-// Package hashtable creates a ValueHashtable data structure for the Item type
-
 import (
 	"sync"
 	"crypto/sha1"
-	//	"github.com/cheekybits/genny/generic"
 )
-
-// Key the key of the dictionary
-//type Key string
-
-// Value the content of the dictionary
-//type Value []byte
 
 // HashSize the byte size of a hash
 const HashSize = 20

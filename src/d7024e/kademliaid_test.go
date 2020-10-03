@@ -97,12 +97,12 @@ func TestKademliaIDString(t *testing.T) {
 	}
 }
 
-func TestIDWithinRange(t *testing.T) {
+func TestNewKademliaIDWithinRange(t *testing.T) {
 	myID := leftPad("", '0', IDLength * 2)
 	neighbourID := leftPad("1", '0', IDLength * 2)
 	myKademliaID, _ := NewKademliaID(myID)
 	neighbourKademliaID, _ := NewKademliaID(neighbourID)
-	newKademliaID := myKademliaID.IDWithinRange()
+	newKademliaID := myKademliaID.NewKademliaIDWithinRange()
 	kIDType := fmt.Sprintf("%T", newKademliaID)
 	if kIDType != "*d7024e.KademliaID" {
 		t.Errorf("The returned object is not of type \"*d7024e.KademliaID\"")

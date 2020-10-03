@@ -76,8 +76,8 @@ func (kademliaID *KademliaID) String() string {
 	return hex.EncodeToString(kademliaID[0:IDLength])
 }
 
-// IDWithinRange returns an ID which is not itself or a neighbour
-func (kademliaID *KademliaID) IDWithinRange() *KademliaID {
+// NewKademliaIDWithinRange returns an ID which is not itself or a neighbour
+func (kademliaID *KademliaID) NewKademliaIDWithinRange() *KademliaID {
 	var flag bool = true
 	var resultKademliaID *KademliaID
 	var neighbouringID *KademliaID = kademliaID

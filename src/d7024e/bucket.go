@@ -30,7 +30,7 @@ func (bucket *bucket) AddContact(contact Contact) {
 	}
 
 	if element == nil {
-		if bucket.list.Len() < IDLength {
+		if bucket.list.Len() < k {
 			bucket.list.PushFront(contact)
 		}
 	} else {
@@ -42,13 +42,11 @@ func (bucket *bucket) AddContact(contact Contact) {
 // the distance has already been calculated
 func (bucket *bucket) GetContactAndCalcDistance(target *KademliaID) []Contact {
 	var contacts []Contact
-
 	for elt := bucket.list.Front(); elt != nil; elt = elt.Next() {
 		contact := elt.Value.(Contact)
 		contact.CalcDistance(target)
 		contacts = append(contacts, contact)
 	}
-
 	return contacts
 }
 

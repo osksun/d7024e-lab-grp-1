@@ -1,9 +1,7 @@
 package d7024e
 
 import (
-	"fmt"
 	"net/http"
-	"time"
 	"os"
 )
 
@@ -35,21 +33,11 @@ func NewNode(address string, kademliaID string) *Node {
 }
 
 // SpinupNode creates http server and listens on contact address
-// Current parameters are temporary for testing to send messages
-func (node *Node) SpinupNode(target *Contact) {
+func (node *Node) SpinupNode(cliRunOnce bool, cliVerbose bool) {
 	serveMux := http.NewServeMux()
 	go node.net.Listen(node.contact.Address, serveMux)
-	time.Sleep(1 * time.Second)
-	if target != nil {
-		/*
-		hash := node.kademlia.Store([]byte("qwe"), []byte("yo"))
-		data := node.kademlia.LookupData(hash)
-		fmt.Printf("Data found: \"%s\"", string(data))
-		*/
-		NewCli(node, os.Stdin).Run(false, true)
-	}
-	//time.Sleep(2 * time.Second)
-
+	go node.net.handleChannels()
+	NewCli(node, os.Stdin).Run(cliRunOnce, cliVerbose)
 }
 
 // AddContact adds an contact to the RoutingTable of the node

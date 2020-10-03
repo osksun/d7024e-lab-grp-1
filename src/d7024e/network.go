@@ -11,8 +11,10 @@ import (
 )
 
 type Network struct {
-	rt *RoutingTable
-	ht *ValueHashtable
+	rt				*RoutingTable
+	ht				*ValueHashtable
+	findNodeChannel chan findNodeRequest
+	exitChannel		chan bool
 }
 
 type msg struct {
@@ -30,12 +32,36 @@ type response_msg struct {
 	Responder   Contact
 }
 
+type findNodeRequest struct {
+	target			*Contact
+	receiver		*Contact
+	responseChannel	chan findNodeResponse
+}
+
+type findNodeResponse struct {
+	sender		*Contact
+	contacts	[]Contact
+}
+
 // NewNetwork Constructor function for Network class
 func NewNetwork(rt *RoutingTable, ht *ValueHashtable) *Network {
 	network := &Network{}
 	network.rt = rt
 	network.ht = ht
+	network.findNodeChannel = make(chan findNodeRequest)
+	network.exitChannel = make(chan bool)
 	return network
+}
+
+func (network *Network) handleChannels() {
+	keepRunning := true
+	for keepRunning {
+		select {
+		case RPCRequest := <- network.findNodeChannel:
+			network.SendFindContactMessage(RPCRequest.target, RPCRequest.receiver, RPCRequest.responseChannel)
+		case keepRunning = <- network.exitChannel:
+		}
+	}
 }
 
 // Helper function for listen
@@ -46,7 +72,6 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 	if err != nil {
 		log.Println(err)
 	}
-
 	var mes string
 	var cl []Contact = nil
 	var d []byte = nil
@@ -158,8 +183,7 @@ func (network *Network) SendPingMessage(receiver *Contact) bool {
 	return false
 }
 
-func (network *Network) SendFindContactMessage(target *Contact, receiver *Contact) []Contact {
-	// TODO
+func (network *Network) SendFindContactMessage(target *Contact, receiver *Contact, resultChannel chan findNodeResponse) {
 	c1 := make(chan response_msg, 1)
 	c2 := make(chan response_msg, 1)
 	go func() {
@@ -175,9 +199,8 @@ func (network *Network) SendFindContactMessage(target *Contact, receiver *Contac
 		if rm.ContactList == nil {
 			log.Println("Error: node has no contacts and returns nil")
 		}
-		return rm.ContactList
+		resultChannel <- findNodeResponse{receiver, rm.ContactList}
 	}
-	return nil
 }
 
 // Retrieves the data from the receiver node using the hash key

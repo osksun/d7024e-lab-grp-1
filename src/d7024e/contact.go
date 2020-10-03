@@ -41,6 +41,11 @@ type ContactCandidates struct {
 	contacts []Contact
 }
 
+// NewContactCandidates constructor for creating an instance of ContactCandidates
+func NewContactCandidates(contacts []Contact) *ContactCandidates {
+	return &ContactCandidates{contacts}
+}
+
 // Append an array of Contacts to the ContactCandidates
 func (candidates *ContactCandidates) Append(contacts []Contact) {
 	candidates.contacts = append(candidates.contacts, contacts...)

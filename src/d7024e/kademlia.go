@@ -1,7 +1,7 @@
 package d7024e
 
 import (
-	"encoding/hex"
+	//"encoding/hex"
 	"fmt"
 	"time"
 )
@@ -136,6 +136,8 @@ func (kademlia *Kademlia) JoinNetwork(address string, findNodeRequestChannel cha
 	refreshContact := NewContact(kademlia.rt.me.ID.NewKademliaIDWithinRange(), "") // Probably not necessary to check for the collisions of the new random ID due to the large ID "space"
 	kademlia.LookupContact(refreshContact, findNodeRequestChannel)
 }
+
+/*
 func (kademlia *Kademlia) LookupData(hash [HashSize]byte) []byte {
 	start := time.Now()
 	data := kademlia.net.ht.Get(hash)
@@ -153,7 +155,8 @@ func (kademlia *Kademlia) LookupData(hash [HashSize]byte) []byte {
 	fmt.Println("Lookup data took", time.Since(start))
 	return data
 }
-
+*/
+/*
 func (kademlia *Kademlia) Store(filename []byte, data []byte) [HashSize]byte {
 	start := time.Now()
 	hash := Hash(filename)
@@ -179,45 +182,8 @@ func (kademlia *Kademlia) Store(filename []byte, data []byte) [HashSize]byte {
 	fmt.Println("Store data took", time.Since(start))
 	return hash
 }
-
-func (kademlia *Kademlia) goFindNode(target *Contact, contact *Contact, channel chan []Contact) {
-	queriedList := []Contact{*kademlia.rt.me}
-	var resultList = kademlia.net.SendFindContactMessage(target, contact)
-	if !resultList[0].Distance.EqualsZero() {
-		var flag = true
-		for ok := true; ok; ok = flag {
-			var requestList ContactCandidates
-			for i := 0; i < len(resultList); i++ {
-				if !kademlia.EqualKademliaID(queriedList, &resultList[i]) {
-					queriedList = append(queriedList, resultList[i])
-					currentResponseList := kademlia.net.SendFindContactMessage(target, &resultList[i])
-					requestList.Append(currentResponseList)
-					if currentResponseList[0].Distance.EqualsZero() {
-						flag = false
-						break
-					}
-				}
-			}
-			if requestList.contacts != nil {
-				worstResult := resultList[len(resultList)-1]
-				mergeList := requestList
-				mergeList.Append(resultList)
-				mergeList.RemoveDuplicates()
-				mergeList.Sort()
-				worstMergeMaxAllowed := MinInt(IDLength, mergeList.Len())
-				if !mergeList.GetContacts(worstMergeMaxAllowed)[worstMergeMaxAllowed-1].Distance.Less(worstResult.Distance) && len(resultList) >= IDLength {
-					flag = false
-				} else {
-					resultList = mergeList.GetContacts(worstMergeMaxAllowed)
-				}
-			} else {
-				flag = false
-			}
-		}
-	}
-	channel <- resultList
-}
-
+*/
+/*
 func (kademlia *Kademlia) goFindData(hash [HashSize]byte, contact *Contact, channel chan []byte) {
 	data := kademlia.net.SendFindDataMessage(hash, contact)
 	if data == nil {
@@ -260,25 +226,4 @@ func (kademlia *Kademlia) goFindData(hash [HashSize]byte, contact *Contact, chan
 	}
 	channel <- data
 }
-
-// Searches argument list to see whether or not argument contact exists
-func (kademlia *Kademlia) EqualKademliaID(contactList []Contact, contact *Contact) bool {
-	for i := 0; i < len(contactList); i++ {
-		if contact.ID.Equals(contactList[i].ID) {
-			return true
-		}
-	}
-	return false
-}
-
-func MinInt(vars ...int) int {
-	min := vars[0]
-
-	for _, i := range vars {
-		if min > i {
-			min = i
-		}
-	}
-
-	return min
-}
+*/

@@ -144,7 +144,7 @@ func (network *Network) SendPingMessage(receiver *Contact) bool {
 	c1 := make(chan response_msg, 1)
 	c2 := make(chan response_msg, 1)
 	go func() {
-		var nilHash [20]byte
+		var nilHash [HashSize]byte
 		rm := network.sendhelper("ping", nilHash, nil, nil, "http://"+receiver.Address+"/msg")
 		c1 <- rm
 		c2 <- rm
@@ -163,7 +163,7 @@ func (network *Network) SendFindContactMessage(target *Contact, receiver *Contac
 	c1 := make(chan response_msg, 1)
 	c2 := make(chan response_msg, 1)
 	go func() {
-		var nilHash [20]byte
+		var nilHash [HashSize]byte
 		rm := network.sendhelper("findcontact", nilHash, nil, target, "http://"+receiver.Address+"/msg")
 		c1 <- rm
 		c2 <- rm

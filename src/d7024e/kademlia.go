@@ -7,17 +7,23 @@ import (
 )
 
 type Kademlia struct {
-	net   *Network
-	rt    *RoutingTable
-	alpha int
+	rt    			*RoutingTable
+	alpha 			int
+	k 	  			int
+	maxRoundTime 	time.Duration
 }
 
+const k = 20
+const alpha = 3
+const maxRoundTime = 10 * time.Second
+
 // NewKademlia Constructor function for Kademlia class
-func NewKademlia(net *Network, rt *RoutingTable, alpha int) *Kademlia {
+func NewKademlia(rt *RoutingTable) *Kademlia {
 	kademlia := &Kademlia{}
-	kademlia.net = net
 	kademlia.rt = rt
 	kademlia.alpha = alpha
+	kademlia.k = k
+	kademlia.maxRoundTime = maxRoundTime
 	return kademlia
 }
 

@@ -5,6 +5,7 @@ import (
 	"os"
 )
 
+// Node type definition
 type Node struct {
 	contact  *Contact
 	rt       *RoutingTable
@@ -13,7 +14,6 @@ type Node struct {
 	kademlia *Kademlia
 }
 
-const alpha = 3 // Alpha value should probably be stored in a Kademlia related file
 
 // NewNode Constructor function for Node class
 func NewNode(address string, kademliaID string) *Node {
@@ -28,7 +28,7 @@ func NewNode(address string, kademliaID string) *Node {
 	node.rt = NewRoutingTable(node.contact)
 	node.vht = NewValueHashtable()
 	node.net = NewNetwork(node.rt, node.vht)
-	node.kademlia = NewKademlia(node.net, node.rt, alpha)
+	node.kademlia = NewKademlia(node.rt)
 	return node
 }
 

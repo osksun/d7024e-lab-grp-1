@@ -58,7 +58,7 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 	case "findcontact":
 		// find contact handle
 		mes = "Response from findcontact"
-		cl = network.rt.FindClosestContacts(m.Target.ID, IDLength) // K = 20 here
+		cl = network.rt.FindClosestContacts(m.Target.ID, k)
 	case "finddata":
 		// find data handle
 		d = network.ht.Get(m.Hash)
@@ -208,7 +208,7 @@ func (network *Network) VibeCheck(c1 chan response_msg) bool {
 
 func (network *Network) NetAddCont(contact Contact) {
 	// if bucket is full
-	if network.rt.buckets[network.rt.getBucketIndex(contact.ID)].Len() == IDLength {
+	if network.rt.buckets[network.rt.getBucketIndex(contact.ID)].Len() == k {
 		// get last in list
 		var last = network.rt.buckets[network.rt.getBucketIndex(contact.ID)].GetLast()
 		// if it's not alive then we add, else we don't

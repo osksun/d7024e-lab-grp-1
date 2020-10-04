@@ -224,8 +224,8 @@ func (network *Network) SendFindDataMessage(request findDataRequest) {
 }
 
 // Tells the receiving node to store the data
-func (network *Network) SendStoreMessage(receiver *Contact, hash [HashSize]byte, data []byte) {
-	network.sendhelper("store", hash, data, nil, "http://"+receiver.Address+"/msg")
+func (network *Network) SendStoreMessage(request storeRequest) {
+	network.sendhelper("store", request.hash, request.data, nil, "http://" + request.receiver.Address + "/msg")
 }
 
 func (network *Network) VibeCheck(c1 chan response_msg) bool {

@@ -183,12 +183,12 @@ func (network *Network) SendPingMessage(receiver *Contact) bool {
 	return false
 }
 
-func (network *Network) SendFindContactMessage(target *Contact, receiver *Contact, resultChannel chan findNodeResponse) {
+func (network *Network) SendFindContactMessage(request findNodeRequest) {
 	c1 := make(chan response_msg, 1)
 	c2 := make(chan response_msg, 1)
 	go func() {
 		var nilHash [HashSize]byte
-		rm := network.sendhelper("findcontact", nilHash, nil, target, "http://"+receiver.Address+"/msg")
+		rm := network.sendhelper("findcontact", nilHash, nil, request.target, "http://" + request.receiver.Address + "/msg")
 		c1 <- rm
 		c2 <- rm
 	}()
@@ -199,7 +199,7 @@ func (network *Network) SendFindContactMessage(target *Contact, receiver *Contac
 		if rm.ContactList == nil {
 			log.Println("Error: node has no contacts and returns nil")
 		}
-		resultChannel <- findNodeResponse{receiver, rm.ContactList}
+		request.responseChannel <- findNodeResponse{rm.Responder, rm.ContactList}
 	}
 }
 

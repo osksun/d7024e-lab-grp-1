@@ -30,10 +30,10 @@ func TestLookupContact(t *testing.T){
 	node3 := NewNode("localhost:5003", kademliaID3)
 	disconnectedNode := NewNode("localhost:5010", kademliaID4)
 
-	node0.AddContact(node1.contact)
-	node1.AddContact(node2.contact)
-	node2.AddContact(node3.contact)
-	node3.AddContact(node0.contact)
+	node0.rt.AddContact(*node1.contact)
+	node1.rt.AddContact(*node2.contact)
+	node2.rt.AddContact(*node3.contact)
+	node3.rt.AddContact(*node0.contact)
 
 	findNodeRequestChannel := make(chan findNodeRequest)
 	go func() {
@@ -43,13 +43,13 @@ func TestLookupContact(t *testing.T){
 			switch RPCRequest.receiver.Address {
 			case node1.contact.Address:
 				RPCResponse.contacts = node1.rt.FindClosestContacts(RPCRequest.target.ID, k)
-				node1.AddContact(node0.contact)
+				node1.rt.AddContact(*node0.contact)
 			case node2.contact.Address:
 				RPCResponse.contacts = node2.rt.FindClosestContacts(RPCRequest.target.ID, k)
-				node2.AddContact(node0.contact)
+				node2.rt.AddContact(*node0.contact)
 			case node3.contact.Address:
 				RPCResponse.contacts = node3.rt.FindClosestContacts(RPCRequest.target.ID, k)
-				node3.AddContact(node0.contact)
+				node3.rt.AddContact(*node0.contact)
 			case "":
 				return
 			}
@@ -92,10 +92,10 @@ func TestJoinNetwork(t *testing.T) {
 	node3 := NewNode("localhost:5003", kademliaID3)
 	disconnectedNode := NewNode("localhost:5010", kademliaID4)
 
-	node0.AddContact(node1.contact)
-	node1.AddContact(node2.contact)
-	node2.AddContact(node3.contact)
-	node3.AddContact(node0.contact)
+	node0.rt.AddContact(*node1.contact)
+	node1.rt.AddContact(*node2.contact)
+	node2.rt.AddContact(*node3.contact)
+	node3.rt.AddContact(*node0.contact)
 
 	findNodeRequestChannel := make(chan findNodeRequest)
 	go func() {
@@ -105,20 +105,20 @@ func TestJoinNetwork(t *testing.T) {
 			switch RPCRequest.receiver.Address {
 			case node0.contact.Address:
 				RPCResponse.contacts = node0.rt.FindClosestContacts(RPCRequest.target.ID, k)
-				node0.AddContact(disconnectedNode.contact)
-				disconnectedNode.AddContact(node0.contact)
+				node0.rt.AddContact(*disconnectedNode.contact)
+				disconnectedNode.rt.AddContact(*node0.contact)
 			case node1.contact.Address:
 				RPCResponse.contacts = node1.rt.FindClosestContacts(RPCRequest.target.ID, k)
-				node1.AddContact(disconnectedNode.contact)
-				disconnectedNode.AddContact(node1.contact)
+				node1.rt.AddContact(*disconnectedNode.contact)
+				disconnectedNode.rt.AddContact(*node1.contact)
 			case node2.contact.Address:
 				RPCResponse.contacts = node2.rt.FindClosestContacts(RPCRequest.target.ID, k)
-				node2.AddContact(disconnectedNode.contact)
-				disconnectedNode.AddContact(node2.contact)
+				node2.rt.AddContact(*disconnectedNode.contact)
+				disconnectedNode.rt.AddContact(*node2.contact)
 			case node3.contact.Address:
 				RPCResponse.contacts = node3.rt.FindClosestContacts(RPCRequest.target.ID, k)
-				node3.AddContact(disconnectedNode.contact)
-				disconnectedNode.AddContact(node3.contact)
+				node3.rt.AddContact(*disconnectedNode.contact)
+				disconnectedNode.rt.AddContact(*node3.contact)
 			case "":
 				return
 			}
@@ -157,11 +157,11 @@ func TestStore(t *testing.T) {
 	node3 := NewNode("localhost:5003", kademliaID3)
 	unresponsiveNode := NewNode("localhost:5004", kademliaID4)
 
-	node0.AddContact(node1.contact)
-	node0.AddContact(unresponsiveNode.contact)
-	node1.AddContact(node2.contact)
-	node2.AddContact(node3.contact)
-	node3.AddContact(node0.contact)
+	node0.rt.AddContact(*node1.contact)
+	node0.rt.AddContact(*unresponsiveNode.contact)
+	node1.rt.AddContact(*node2.contact)
+	node2.rt.AddContact(*node3.contact)
+	node3.rt.AddContact(*node0.contact)
 
 	findNodeRequestChannel := make(chan findNodeRequest)
 	go func() {
@@ -171,16 +171,16 @@ func TestStore(t *testing.T) {
 			switch findNodeRequest.receiver.Address {
 			case node1.contact.Address:
 				findNodeReponse.contacts = node1.rt.FindClosestContacts(findNodeRequest.target.ID, k)
-				node1.AddContact(node0.contact)
-				node0.AddContact(node1.contact)
+				node1.rt.AddContact(*node0.contact)
+				node0.rt.AddContact(*node1.contact)
 			case node2.contact.Address:
 				findNodeReponse.contacts = node2.rt.FindClosestContacts(findNodeRequest.target.ID, k)
-				node2.AddContact(node0.contact)
-				node0.AddContact(node2.contact)
+				node2.rt.AddContact(*node0.contact)
+				node0.rt.AddContact(*node2.contact)
 			case node3.contact.Address:
 				findNodeReponse.contacts = node3.rt.FindClosestContacts(findNodeRequest.target.ID, k)
-				node3.AddContact(node0.contact)
-				node0.AddContact(node3.contact)
+				node3.rt.AddContact(*node0.contact)
+				node0.rt.AddContact(*node3.contact)
 			case "":
 				return
 			}
@@ -233,11 +233,11 @@ func TestLookupData(t *testing.T) {
 	node3 := NewNode("localhost:5003", kademliaID3)
 	unresponsiveNode := NewNode("localhost:5004", kademliaID4)
 
-	node0.AddContact(node1.contact)
-	node0.AddContact(unresponsiveNode.contact)
-	node1.AddContact(node2.contact)
-	node2.AddContact(node3.contact)
-	node3.AddContact(node0.contact)
+	node0.rt.AddContact(*node1.contact)
+	node0.rt.AddContact(*unresponsiveNode.contact)
+	node1.rt.AddContact(*node2.contact)
+	node2.rt.AddContact(*node3.contact)
+	node3.rt.AddContact(*node0.contact)
 
 	findDataRequestChannel := make(chan findDataRequest)
 	go func() {
@@ -250,22 +250,22 @@ func TestLookupData(t *testing.T) {
 				if findDataReponse.data == nil {
 					findDataReponse.contacts = node1.rt.FindClosestContacts(findDataRequest.target.ID, k)
 				}
-				node1.AddContact(node0.contact)
-				node0.AddContact(node1.contact)
+				node1.rt.AddContact(*node0.contact)
+				node0.rt.AddContact(*node1.contact)
 			case node2.contact.Address:
 				findDataReponse.data = node2.vht.Get(findDataRequest.hash)
 				if findDataReponse.data == nil {
 					findDataReponse.contacts = node2.rt.FindClosestContacts(findDataRequest.target.ID, k)
 				}
-				node2.AddContact(node0.contact)
-				node0.AddContact(node2.contact)
+				node2.rt.AddContact(*node0.contact)
+				node0.rt.AddContact(*node2.contact)
 			case node3.contact.Address:
 				findDataReponse.data = node3.vht.Get(findDataRequest.hash)
 				if findDataReponse.data == nil {
 					findDataReponse.contacts = node3.rt.FindClosestContacts(findDataRequest.target.ID, k)
 				}
-				node3.AddContact(node0.contact)
-				node0.AddContact(node3.contact)
+				node3.rt.AddContact(*node0.contact)
+				node0.rt.AddContact(*node3.contact)
 			case unresponsiveNode.contact.Address:
 				continue
 			case "":

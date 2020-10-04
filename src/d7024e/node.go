@@ -39,8 +39,3 @@ func (node *Node) SpinupNode(cliRunOnce bool, cliVerbose bool) {
 	go node.net.handleChannels()
 	NewCli(node, os.Stdin).Run(cliRunOnce, cliVerbose)
 }
-
-// AddContact adds an contact to the RoutingTable of the node
-func (node *Node) AddContact(contact *Contact) {
-	node.rt.AddContact(*contact)
-}

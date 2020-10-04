@@ -14,6 +14,8 @@ type Network struct {
 	rt				*RoutingTable
 	ht				*ValueHashtable
 	findNodeChannel chan findNodeRequest
+	storeChannel	chan storeRequest
+	findDataChannel	chan findDataRequest
 	exitChannel		chan bool
 }
 

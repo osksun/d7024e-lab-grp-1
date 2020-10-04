@@ -162,52 +162,20 @@ func (kademlia *Kademlia) LookupData(hash [HashSize]byte, findDataRequestChannel
 	fmt.Println("Lookup data took", time.Since(start))
 	return data
 }
+
+func (kademlia *Kademlia) Store(filename []byte, data []byte, storeRequestChannel chan storeRequest, findNodeRequestChannel chan findNodeRequest) [HashSize]byte {
 	start := time.Now()
 	hash := Hash(filename)
 	kID, _ := NewKademliaID(hex.EncodeToString(hash[:]))
 	target := NewContact(kID, "")
-	var initiatorList []Contact
-	initiatorList = kademlia.rt.FindClosestContacts(target.ID, kademlia.alpha)
-	var candidateList ContactCandidates
-	c1 := make(chan []Contact)
-	for i := 0; i < MinInt(kademlia.alpha, len(initiatorList)); i++ {
-		go kademlia.goFindNode(target, &initiatorList[i], c1)
-	}
-	for i := 0; i < MinInt(kademlia.alpha, len(initiatorList)); i++ {
-		newCandidates := <-c1
-		candidateList.Append(newCandidates)
-	}
-	candidateList.RemoveDuplicates()
-	candidateList.Sort()
-	closestContacts := candidateList.GetContacts(MinInt(IDLength, candidateList.Len()))
-	for _, contact := range closestContacts {
-		kademlia.net.SendStoreMessage(&contact, hash, data)
+	closestContacts := kademlia.LookupContact(target, kademlia.k, findNodeRequestChannel)
+	for i := 0; i < len(closestContacts); i++ {
+		storeRequestChannel <- storeRequest{&closestContacts[i], hash, data}
 	}
 	fmt.Println("Store data took", time.Since(start))
 	return hash
 }
-*/
-/*
-func (kademlia *Kademlia) goFindData(hash [HashSize]byte, contact *Contact, channel chan []byte) {
-	data := kademlia.net.SendFindDataMessage(hash, contact)
-	if data == nil {
-		kID, _ := NewKademliaID(hex.EncodeToString(hash[:]))
-		target := NewContact(kID, "")
-		queriedList := []Contact{*kademlia.rt.me}
-		var requestList ContactCandidates
-		var resultList = kademlia.net.SendFindContactMessage(target, contact)
-		var flag = true
-		for ok := true; ok; ok = flag {
-			for i := 0; i < len(resultList); i++ {
-				if !kademlia.EqualKademliaID(queriedList, &resultList[i]) {
-					queriedList = append(queriedList, resultList[i])
-					data = kademlia.net.SendFindDataMessage(hash, contact)
-					if data == nil {
-						currentResponseList := kademlia.net.SendFindContactMessage(target, &resultList[i])
-						requestList.Append(currentResponseList)
-					} else {
-						flag = false
-						break
+
 func (kademlia *Kademlia) findQueryContacts(shortlist *ContactCandidates) []*Contact{
 	var queryContacts []*Contact;
 	for i := 0; i < shortlist.Len(); i++ {

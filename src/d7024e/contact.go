@@ -82,10 +82,10 @@ func (candidates *ContactCandidates) Less(i, j int) bool {
 func (candidates *ContactCandidates) RemoveDuplicates() {
 	keys := make(map[string]bool)
 	list := []Contact{}
-	for _, entry := range candidates.contacts {
-		if _, value := keys[entry.Address]; !value {
-			keys[entry.Address] = true
-			list = append(list, entry)
+	for i := 0; i < candidates.Len(); i++ {
+		if _, value := keys[candidates.contacts[i].Address]; !value {
+			keys[candidates.contacts[i].Address] = true
+			list = append(list, candidates.contacts[i])
 		}
 	}
 	candidates.contacts = list
@@ -93,8 +93,8 @@ func (candidates *ContactCandidates) RemoveDuplicates() {
 
 // remove removes a contact by given *KademliaID, the order of the list will not be maintained
 func (candidates *ContactCandidates) remove(kademliaID *KademliaID) {
-	for i, contact := range candidates.contacts {
-		if contact.ID.Equals(kademliaID) {
+	for i := 0; i < candidates.Len(); i++ {
+		if candidates.contacts[i].ID.Equals(kademliaID) {
 			candidates.contacts [i] = candidates.contacts [len(candidates.contacts ) - 1]
 			candidates.contacts = candidates.contacts[:len(candidates.contacts ) - 1]
 		}
@@ -103,8 +103,8 @@ func (candidates *ContactCandidates) remove(kademliaID *KademliaID) {
 
 // removeContact removes a contact by given *KademliaID, the order of the list will not be maintained
 func removeContact(contacts []*Contact, kademliaID *KademliaID) []*Contact{
-	for i, contact := range contacts {
-		if contact.ID.Equals(kademliaID) {
+	for i := 0; i < len(contacts); i++ {
+		if contacts[i].ID.Equals(kademliaID) {
 			contacts[i] = contacts[len(contacts) - 1]
 			return contacts[:len(contacts) - 1]
 		}

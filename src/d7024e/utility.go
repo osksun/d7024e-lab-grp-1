@@ -10,12 +10,10 @@ func leftPad(str string, pad rune, lenght int) string {
 // MinInt takes an arbitrary number of integers as in put and returns the smallest one
 func MinInt(vars ...int) int {
 	min := vars[0]
-
-	for _, i := range vars {
-		if min > i {
-			min = i
+	for i := 0; i < len(vars); i++ {
+		if min > vars[i] {
+			min = vars[i]
 		}
 	}
-
 	return min
 }

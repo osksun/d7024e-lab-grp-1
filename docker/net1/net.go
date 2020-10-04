@@ -1,4 +1,4 @@
-package main 
+package main
 
 import (
 	"bufio"
@@ -9,9 +9,9 @@ import (
 	"net/http"
 	"os"
 	"strconv" )
- 
-var ipList [50]string 
-var port string = "8080" 
+
+var ipList [50]string
+var port string = "8080"
 func main() {
 	myip()
 	for i := 1; i < 51; i++ {
@@ -55,8 +55,8 @@ func HelloServer(w http.ResponseWriter, r *http.Request) {
 }
 func myip() net.IP {
 	addrs, _ := net.InterfaceAddrs()
-	for _, a := range addrs {
-		if ipnet, ok := a.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+	for i := 0; i < len(addrs); i++  {
+		if ipnet, ok := addrs[i].(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
 			if ipnet.IP.To4() != nil {
 				return ipnet.IP
 			}

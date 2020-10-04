@@ -128,13 +128,13 @@ func TestJoinNetwork(t *testing.T){
 
 	buckets := disconnectedNode.rt.buckets
 	nContactsBefore := 0
-	for _, bucket := range buckets {
-		nContactsBefore += bucket.Len()
+	for i := 0; i < len(buckets); i++ {
+		nContactsBefore += buckets[i].Len()
 	}
 	disconnectedNode.kademlia.JoinNetwork(node0.contact.Address, findNodeRequestChannel)
 	nContactsAfter := 0
-	for _, bucket := range buckets {
-		nContactsAfter += bucket.Len()
+	for i := 0; i < len(buckets); i++ {
+		nContactsAfter += buckets[i].Len()
 	}
 	if nContactsAfter <= nContactsBefore{
 		t.Errorf("Expected node.rt.buckets to contain more contacts after joining the network but did not, went from %d to %d", nContactsBefore, nContactsAfter)

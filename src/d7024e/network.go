@@ -86,11 +86,15 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 		cl = network.rt.FindClosestContacts(m.Target.ID, k)
 	case "finddata":
 		// find data handle
+		// If a corresponding value is present on the recipient, the associated data is returned
 		d = network.ht.Get(m.Hash)
+		if d == nil {
+			// Otherwise the RPC is equivalent to a FIND_NODE and a set of k triples is returned
+			cl = network.rt.FindClosestContacts(m.Target.ID, k)
+		}
 		mes = "Response from finddata"
 	case "store":
 		// store handle
-		// PUT NEEDS A STRING KEY ASSOCIATED WITH THE DATA
 		network.ht.Put(m.Hash, m.Data)
 		mes = "Response from store"
 	default:
@@ -165,7 +169,6 @@ func (network *Network) Listen(address string, serveMux *http.ServeMux) {
 }
 
 func (network *Network) SendPingMessage(receiver *Contact) bool {
-	// TODO
 	c1 := make(chan response_msg, 1)
 	c2 := make(chan response_msg, 1)
 	go func() {

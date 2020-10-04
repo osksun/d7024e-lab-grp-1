@@ -204,9 +204,23 @@ func (network *Network) SendFindContactMessage(target *Contact, receiver *Contac
 }
 
 // Retrieves the data from the receiver node using the hash key
-func (network *Network) SendFindDataMessage(hash [HashSize]byte, receiver *Contact) []byte {
-	rm := network.sendhelper("finddata", hash, nil, nil, "http://"+receiver.Address+"/msg")
-	return rm.Data
+func (network *Network) SendFindDataMessage(request findDataRequest) {
+	c1 := make(chan response_msg, 1)
+	c2 := make(chan response_msg, 1)
+	go func() {
+		rm := network.sendhelper("finddata", request.hash, nil, request.target, "http://" + request.receiver.Address + "/msg")
+		c1 <- rm
+		c2 <- rm
+	}()
+
+	if network.VibeCheck(c1) {
+		rm := <-c2
+		go network.NetAddCont(rm.Responder)
+		if rm.ContactList == nil {
+			log.Println("Error: node has no contacts and returns nil")
+		}
+		request.responseChannel <- findDataResponse{rm.Responder, rm.Data, rm.ContactList}
+	}
 }
 
 // Tells the receiving node to store the data

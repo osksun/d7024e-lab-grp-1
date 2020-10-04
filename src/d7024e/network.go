@@ -49,17 +49,23 @@ func NewNetwork(rt *RoutingTable, ht *ValueHashtable) *Network {
 	network.rt = rt
 	network.ht = ht
 	network.findNodeChannel = make(chan findNodeRequest)
+	network.storeChannel = make(chan storeRequest)
+	network.findDataChannel = make(chan findDataRequest)
 	network.exitChannel = make(chan bool)
 	return network
 }
 
 func (network *Network) handleChannels() {
-	keepRunning := true
-	for keepRunning {
+	exit := false
+	for !exit {
 		select {
-		case RPCRequest := <- network.findNodeChannel:
-			network.SendFindContactMessage(RPCRequest.target, RPCRequest.receiver, RPCRequest.responseChannel)
-		case keepRunning = <- network.exitChannel:
+		case findNodeRequest := <- network.findNodeChannel:
+			network.SendFindContactMessage(findNodeRequest)
+		case storeRequest := <- network.storeChannel:
+			network.SendStoreMessage(storeRequest)
+		case findDataRequest := <- network.findDataChannel:
+			network.SendFindDataMessage(findDataRequest)
+		case exit = <- network.exitChannel:
 		}
 	}
 }

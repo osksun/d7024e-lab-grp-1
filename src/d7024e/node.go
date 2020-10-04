@@ -28,7 +28,7 @@ func NewNode(address string, kademliaID string) *Node {
 	node.rt = NewRoutingTable(node.contact)
 	node.vht = NewValueHashtable()
 	node.net = NewNetwork(node.rt, node.vht)
-	node.kademlia = NewKademlia(node.rt)
+	node.kademlia = NewKademlia(node.rt, node.vht)
 	return node
 }
 

@@ -6,8 +6,10 @@ import (
 	"time"
 )
 
+// Kademlia type definition
 type Kademlia struct {
 	rt    			*RoutingTable
+	ht				*ValueHashtable
 	alpha 			int
 	k 	  			int
 	maxRoundTime 	time.Duration
@@ -18,9 +20,10 @@ const alpha = 3
 const maxRoundTime = 10 * time.Second
 
 // NewKademlia Constructor function for Kademlia class
-func NewKademlia(rt *RoutingTable) *Kademlia {
+func NewKademlia(rt *RoutingTable, ht *ValueHashtable) *Kademlia {
 	kademlia := &Kademlia{}
 	kademlia.rt = rt
+	kademlia.ht = ht
 	kademlia.alpha = alpha
 	kademlia.k = k
 	kademlia.maxRoundTime = maxRoundTime

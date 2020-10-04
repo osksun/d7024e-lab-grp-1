@@ -23,14 +23,17 @@ func TestLookupContact(t *testing.T){
 	kademliaID2 := leftPad("2", '0', IDLength * 2)
 	kademliaID3 := leftPad("3", '0', IDLength * 2)
 	kademliaID4 := leftPad("4", '0', IDLength * 2)
+	kademliaID5 := leftPad("5", '0', IDLength * 2)
 
 	node0 := NewNode("localhost:5000", kademliaID0)
 	node1 := NewNode("localhost:5001", kademliaID1)
 	node2 := NewNode("localhost:5002", kademliaID2)
 	node3 := NewNode("localhost:5003", kademliaID3)
 	disconnectedNode := NewNode("localhost:5010", kademliaID4)
+	unresponsiveNode := NewNode("localhost:5011", kademliaID5)
 
 	node0.rt.AddContact(*node1.contact)
+	node0.rt.AddContact(*unresponsiveNode.contact)
 	node1.rt.AddContact(*node2.contact)
 	node2.rt.AddContact(*node3.contact)
 	node3.rt.AddContact(*node0.contact)
@@ -50,6 +53,8 @@ func TestLookupContact(t *testing.T){
 			case node3.contact.Address:
 				RPCResponse.contacts = node3.rt.FindClosestContacts(RPCRequest.target.ID, k)
 				node3.rt.AddContact(*node0.contact)
+			case unresponsiveNode.contact.Address:
+				continue;
 			case "":
 				return
 			}

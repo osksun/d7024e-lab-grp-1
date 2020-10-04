@@ -92,6 +92,13 @@ func (candidates *ContactCandidates) RemoveDuplicates() {
 }
 
 // remove removes a contact by given *KademliaID, the order of the list will not be maintained
+func (candidates *ContactCandidates) removeContacts(contacts []*Contact) {
+	for i := 0; i < len(contacts); i++ {
+		candidates.remove(contacts[i].ID)
+	}
+}
+
+// remove removes a contact by given *KademliaID, the order of the list will not be maintained
 func (candidates *ContactCandidates) remove(kademliaID *KademliaID) {
 	for i := 0; i < candidates.Len(); i++ {
 		if candidates.contacts[i].ID.Equals(kademliaID) {

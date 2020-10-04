@@ -44,18 +44,3 @@ func (node *Node) SpinupNode(cliRunOnce bool, cliVerbose bool) {
 func (node *Node) AddContact(contact *Contact) {
 	node.rt.AddContact(*contact)
 }
-
-// Contact returns the contact of the node
-func (node *Node) Contact() *Contact {
-	return node.contact
-}
-
-// Rt returns the routing table of the node
-func (node *Node) Rt() *RoutingTable {
-	return node.rt
-}
-
-// Vht returns the routing table of the node
-func (node *Node) Vht() *ValueHashtable {
-	return node.vht
-}

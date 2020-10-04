@@ -39,7 +39,26 @@ type findNodeRequest struct {
 }
 
 type findNodeResponse struct {
-	sender		*Contact
+	sender		Contact
+	contacts	[]Contact
+}
+
+type storeRequest struct {
+	receiver 	*Contact
+	hash 		[HashSize]byte
+	data 		[]byte
+}
+
+type findDataRequest struct {
+	hash			[HashSize]byte
+	target			*Contact
+	receiver		*Contact
+	responseChannel chan findDataResponse
+}
+
+type findDataResponse struct {
+	sender		Contact
+	data		[]byte
 	contacts	[]Contact
 }
 

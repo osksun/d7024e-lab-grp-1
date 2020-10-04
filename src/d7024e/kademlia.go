@@ -31,98 +31,64 @@ func NewKademlia(rt *RoutingTable, ht *ValueHashtable) *Kademlia {
 }
 
 // LookupContact returns the closest found contact of the searched network based on given target
-func (kademlia *Kademlia) LookupContact(target *Contact, findNodeRequestChannel chan findNodeRequest) Contact {
+func (kademlia *Kademlia) LookupContact(target *Contact, count int, findNodeRequestChannel chan findNodeRequest) []Contact {
 	start := time.Now()
-	var closestContact Contact
+	countClosestIndex := count - 1
+	var countClosestContact *Contact
 	// Add the node who performs the lookup to the shortlist and set it to queried so it does not query itself
 	shortlist := NewContactCandidates([]Contact{*kademlia.rt.me})
 	shortlist.contacts[0].CalcDistance(target.ID)
 	shortlist.contacts[0].queried = true
 	// Find alpha closest contacts of own buckets
 	shortlist.Append(kademlia.rt.FindClosestContacts(target.ID, kademlia.alpha))
-	// Remove any potential duplicates (if FindClosestContacts returned the node who is performing the lookup there would be a duplicate)
+	// Remove any potential duplicates and sort by distance to target (if FindClosestContacts returned the node who is performing the lookup there would be a duplicate)
 	shortlist.RemoveDuplicates()
 	shortlist.Sort()
 	// Note closest contact
-	closestContact = shortlist.contacts[0]
-	numQueriedContacts := 0
-	queryNewContacts := true
+	countClosestContact = &shortlist.contacts[MinInt(countClosestIndex, shortlist.Len() - 1)]
 	// If the distance to the closest contact is 0 the lookup is done (Exit condition)
-	if !closestContact.Distance.EqualsZero() {
+	if !countClosestContact.Distance.EqualsZero() {
+		numQueriedContacts := 0
+		queryNewContacts := true
 		// If we have queried k contacts the lookup is done (Exit condition)
 		for numQueriedContacts < kademlia.k {
 			// Find contacts to query that has not already been queried
-			var currentQueryContacts []*Contact
-			for i := 0; i < shortlist.Len(); i++ {
-				if !shortlist.contacts[i].queried {
-					currentQueryContacts = append(currentQueryContacts, &shortlist.contacts[i])
-					if len(currentQueryContacts) >= alpha {
-						break
-					}
-				}
-			}
+			currentQueryContacts := kademlia.findQueryContacts(shortlist)
 			// If there are no contacts to be queried the lookup is done (Exit condition)
 			if len(currentQueryContacts) <= 0 {
 				break
 			}
 			findNodeResponseChannel := make(chan findNodeResponse, len(currentQueryContacts))
 			roundStartTime := time.Now()
-			// Send parallel, asynchronous FIND_NODE RPCs to at most alpha contacts in the shortlist
-			for i := 0; i < MinInt(alpha, len(currentQueryContacts)); i++ {
-				findNodeRequestChannel <- findNodeRequest{target, currentQueryContacts[i], findNodeResponseChannel}
-			}
-			// Wait either for kademlia.maxRoundTime or untill we have gotten all expected responces depending on
-			// which is the quickest and handle every response we get
-			nResponses := 0
-			nExpectedResponses := len(currentQueryContacts)
-			for time.Since(roundStartTime) < kademlia.maxRoundTime && nResponses < nExpectedResponses {
-				select {
-				case RPCResponse, ok := <- findNodeResponseChannel:
-					if ok {
-						// TODO handle replies later than maxRoundTime
-						RPCResponse.sender.queried = true
-						if !queryNewContacts {
-							// Since we don't want to query any of the new contacts we set their queried variable to true
-							for i := 0; i < len(RPCResponse.contacts); i++ {
-								RPCResponse.contacts[i].queried = true
-							}
-						}
-						shortlist.Append(RPCResponse.contacts)
-						nResponses++
-						// Since we got a response we remove the responder from the currentQueryContacts
-						currentQueryContacts = removeContact(currentQueryContacts, RPCResponse.sender.ID)
-					} else {
-						fmt.Println("\"findNodeResponseChannel\" has been closed!")
-					}
-				default:
-				}
-			}
+			kademlia.sendFindNodeRequests(target, currentQueryContacts, findNodeRequestChannel, findNodeResponseChannel)
+			numQueriedContacts += kademlia.receiveFindNodeResponses(&currentQueryContacts, shortlist, roundStartTime, queryNewContacts, findNodeResponseChannel)
 			// Remove contacts from shortlist that hasn't responded yet
-			for _, contact := range currentQueryContacts {
-				shortlist.remove(contact.ID)
-			}
-			// Update the number of queried contacts
-			numQueriedContacts += nResponses
+			shortlist.removeContacts(currentQueryContacts)
 			// If a duplicate contact of an already queried contact has been added, the duplicate will most likely
 			// have the queried variable set to false. This should not be a problem since we remove every duplicate
 			// of every contact expect the first which should be the one with the queried variable set to true if it
 			// has been queried already
 			shortlist.RemoveDuplicates()
 			shortlist.Sort()
-			// If a cycle doesn't find a closer contact we don't want new found contacts to be queried
-			if !shortlist.contacts[0].Distance.Less(closestContact.Distance) {
-				queryNewContacts = false
+			// We only need to check if the newCountClosestContact is closer than countClosestContact if we have
+			// a total of count contacts in our shortlist
+			if shortlist.Len() >= count {
+				newCountClosestContact := &shortlist.contacts[MinInt(countClosestIndex, shortlist.Len() - 1)]
+				// If a cycle doesn't find a closer contact we don't want new found contacts to be queried
+				if !newCountClosestContact.Distance.Less(countClosestContact.Distance) {
+					queryNewContacts = false
+				}
+			} else {
+				countClosestContact = &shortlist.contacts[MinInt(countClosestIndex, shortlist.Len() - 1)]
 			}
-			// Note closest contact
-			closestContact = shortlist.contacts[0]
 			// If the distance to the closest contact is 0 the lookup is done (Exit condition)
-			if closestContact.Distance.EqualsZero() {
+			if countClosestContact.Distance.EqualsZero() {
 				break
 			}
 		}
 	}
 	fmt.Println("Lookup contact took", time.Since(start))
-	return closestContact
+	return shortlist.contacts[:MinInt(count, shortlist.Len())]
 }
 
 // JoinNetwork attempts to join a network given the address of a participant in an existing network
@@ -207,20 +173,55 @@ func (kademlia *Kademlia) goFindData(hash [HashSize]byte, contact *Contact, chan
 					} else {
 						flag = false
 						break
+func (kademlia *Kademlia) findQueryContacts(shortlist *ContactCandidates) []*Contact{
+	var queryContacts []*Contact;
+	for i := 0; i < shortlist.Len(); i++ {
+		if !shortlist.contacts[i].queried {
+			queryContacts = append(queryContacts, &shortlist.contacts[i])
+			if len(queryContacts) >= kademlia.alpha {
+				break
+			}
+		}
+	}
+	return queryContacts
+}
+
+func (kademlia *Kademlia) sendFindNodeRequests(target *Contact, queryContacts []*Contact, findNodeRequestChannel chan findNodeRequest, findNodeResponseChannel chan findNodeResponse) {
+	for i := 0; i < MinInt(alpha, len(queryContacts)); i++ {
+		findNodeRequestChannel <- findNodeRequest{target, queryContacts[i], findNodeResponseChannel}
+	}
+}
+
+func (kademlia *Kademlia) receiveFindNodeResponses(queryContacts *[]*Contact, shortlist *ContactCandidates, roundStartTime time.Time, queryNewContacts bool, findNodeResponseChannel chan findNodeResponse) int {
+	responsesReceived := 0
+	expectedResponses := len(*queryContacts)
+	// Wait either for kademlia.maxRoundTime or until we have gotten all expected responses depending on
+	// which is the quickest and handle every response we get
+	for time.Since(roundStartTime) < kademlia.maxRoundTime && responsesReceived < expectedResponses {
+		select {
+		case findNodeResponse, ok := <- findNodeResponseChannel:
+			if ok {
+				// TODO handle replies later than maxRoundTime
+				findNodeResponse.sender.queried = true
+				if !queryNewContacts {
+					// Since we don't want to query any of the new contacts we set their queried variable to true
+					for i := 0; i < len(findNodeResponse.contacts); i++ {
+						findNodeResponse.contacts[i].queried = true
 					}
 				}
+				shortlist.Append(findNodeResponse.contacts)
+				responsesReceived++
+				// Since we got a response we remove the responder from the currentQueryContacts
+				remaininqQueryContacts := removeContact(*queryContacts, findNodeResponse.sender.ID)
+				(*queryContacts) = remaininqQueryContacts
+			} else {
+				fmt.Println("\"findNodeResponseChannel\" has been closed!")
 			}
-			if requestList.contacts != nil && flag {
-				worstResult := resultList[len(resultList)-1]
-				mergeList := requestList
-				mergeList.Append(resultList)
-				mergeList.RemoveDuplicates()
-				mergeList.Sort()
-				worstMergeMaxAllowed := MinInt(IDLength, mergeList.Len())
-				if !mergeList.GetContacts(worstMergeMaxAllowed)[worstMergeMaxAllowed-1].Distance.Less(worstResult.Distance) && len(resultList) >= IDLength {
-					flag = false
-				} else {
-					resultList = mergeList.GetContacts(worstMergeMaxAllowed)
+		default:
+		}
+	}
+	return responsesReceived
+}
 				}
 			} else {
 				flag = false

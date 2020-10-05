@@ -2,11 +2,13 @@ FROM ubuntu:18.04
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y fping
+#RUN apt-get update && apt-get install -y fping
 RUN apt-get update && apt-get install -y golang-go
 
-ADD pingAll.sh /app
-ADD net1 /app
+#ADD pingAll.sh /app
+#ADD net1 /app
+
+ADD src /app
 
 #COPY . .
 

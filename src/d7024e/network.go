@@ -227,6 +227,7 @@ func (network *Network) SendFindContactMessage(request findNodeRequest) {
 		rm := <-c2
 		go network.NetAddCont(rm.Responder)
 		if rm.ContactList == nil {
+			rm.ContactList = append(rm.ContactList, rm.Responder)
 			log.Println("Error: node has no contacts and returns nil")
 		}
 		request.responseChannel <- findNodeResponse{rm.Responder, rm.ContactList}

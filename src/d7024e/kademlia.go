@@ -99,7 +99,9 @@ func (kademlia *Kademlia) JoinNetwork(address string, findNodeRequestChannel cha
 	findNodeResponse := <- findNodeResponseChannel
 	// Add each of the returned contacts from the bootstrap node to the joining node's buckets
 	for i := 0; i < len(findNodeResponse.contacts); i++ {
-		kademlia.rt.AddContact(findNodeResponse.contacts[i])
+		if !findNodeResponse.contacts[i].ID.Equals(kademlia.rt.me.ID) {
+			kademlia.rt.AddContact(findNodeResponse.contacts[i])
+		}
 	}
 	// Perform an refresh by executing a lookup with a random random ID as target which is not the same as the joining node's or it's neighbour
 	refreshContact := NewContact(kademlia.rt.me.ID.NewKademliaIDWithinRange(), "") // Probably not necessary to check for the collisions of the new random ID due to the large ID "space"

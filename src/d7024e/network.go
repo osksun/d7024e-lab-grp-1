@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"time"
+	"strings"
 )
 
 type Network struct {
@@ -192,7 +193,7 @@ func (network *Network) sendhelper(mes string, hash [HashSize]byte, data []byte,
 func (network *Network) Listen(address string, serveMux *http.ServeMux) {
 	fmt.Println("Server starting on:", address)
 	serveMux.HandleFunc("/msg", network.handleListen)
-	log.Fatal(http.ListenAndServe(address, serveMux))
+	log.Fatal(http.ListenAndServe(":" + strings.Split(address, ":")[1], serveMux))
 }
 
 func (network *Network) SendPingMessage(receiver *Contact) bool {

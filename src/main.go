@@ -8,14 +8,13 @@ import (
 	"os"
 	"regexp"
 	"strconv"
-
 	"./d7024e"
 )
 
 func main() {
 	joinip := getJoin()
 	log.Println("Joining to node: " + joinip)
-	node := d7024e.NewNode(":8000", "")
+	node := d7024e.NewNode(checkip() + ":8000", "")
 	node.SpinupNode(false, true, joinip)
 
 }

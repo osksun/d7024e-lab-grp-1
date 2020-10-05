@@ -279,29 +279,26 @@ func TestContactCandidatesLess (t *testing.T){
 }
 
 func TestRemoveDuplicates(t *testing.T){
-	testID0 := leftPad("", 'f', IDLength * 2)
+	testID0 := leftPad("", '1', IDLength * 2)
 	testKademliaID0, _ := NewKademliaID(testID0)
 	testAddress0 := "localhost:8000"
 	testContact0 := NewContact(testKademliaID0, testAddress0)
 
-	testID1 := leftPad("", 'e', IDLength * 2)
-	testKademliaID1, _ := NewKademliaID(testID1)
-	testAddress1 := "localhost:8000"
+	testKademliaID1, _ := NewKademliaID(testID0)
+	testAddress1 := "localhost:8001"
 	testContact1 := NewContact(testKademliaID1, testAddress1)
 
-	testID2 := leftPad("", '6', IDLength * 2)
-	testKademliaID2, _ := NewKademliaID(testID2)
-	testAddress2 := "localhost:8000"
+	testKademliaID2, _ := NewKademliaID(testID0)
+	testAddress2 := "localhost:8002"
 	testContact2 := NewContact(testKademliaID2, testAddress2)
 
-	testID3 := leftPad("", '1', IDLength * 2)
-	testKademliaID3, _ := NewKademliaID(testID3)
-	testAddress3 := "localhost:8000"
+	testKademliaID3, _ := NewKademliaID(testID0)
+	testAddress3 := "localhost:8003"
 	testContact3 := NewContact(testKademliaID3, testAddress3)
 
-	testID4 := leftPad("", '2', IDLength * 2)
-	testKademliaID4, _ := NewKademliaID(testID4)
-	testAddress4 := "localhost:8003"
+	testID1 := leftPad("", '2', IDLength * 2)
+	testKademliaID4, _ := NewKademliaID(testID1)
+	testAddress4 := "localhost:8004"
 	testContact4 := NewContact(testKademliaID4, testAddress4)
 
 	var testContacts0 []Contact

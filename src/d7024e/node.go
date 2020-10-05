@@ -39,7 +39,7 @@ func (node *Node) SpinupNode(cliRunOnce bool, cliVerbose bool, address string) {
 	// join the address
 	if address != "" {
 		//join the address
-		node.kademlia.JoinNetwork(address, node.net.findNodeChannel)
+		node.kademlia.JoinNetwork(address+":8000", node.net.findNodeChannel)
 	}
 	NewCli(node, os.Stdin).Run(cliRunOnce, cliVerbose)
 }

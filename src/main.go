@@ -14,11 +14,10 @@ import (
 
 func main() {
 	rand.Seed(time.Now().UTC().UnixNano())
-	joinip := "172.17.0.2"//getJoin()
+	joinip := getJoin()
 	log.Println("Joining to node: " + joinip)
 	node := d7024e.NewNode(checkip() + ":8000", "")
 	node.SpinupNode(false, true, joinip)
-
 }
 
 func getJoin() string {

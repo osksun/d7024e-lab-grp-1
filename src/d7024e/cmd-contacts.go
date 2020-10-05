@@ -12,7 +12,7 @@ func Contacts() Cmd{
 		usage: "\"contacts\", \"c\"",
 		action: func(cli *Cli, args ...string) string {
 			buckets := cli.node.rt.buckets
-			contactListStr := "My address\t| ID\n" + cli.node.contact.Address + "| " + cli.node.contact.ID.String() + "\nContact List\n"
+			contactListStr := "My address\t| ID\n" + cli.node.contact.Address + "\t| " + cli.node.contact.ID.String() + "\nContact List\n"
 			contactListStr += "B_ID\t| Address\t\t| K_ID\n"
 			for i := 0; i < len(buckets); i++ {
 				for contact := buckets[i].list.Front(); contact != nil; contact = contact.Next() {

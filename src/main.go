@@ -22,6 +22,7 @@ func main() {
 
 func getJoin() string {
 	ip := checkip()
+	fmt.Println("My IP: " + ip)
 	joinip := ""
 	if ip != "172.17.0.2" {
 		max, _ := extract(ip)
@@ -33,7 +34,7 @@ func getJoin() string {
 }
 
 func checkip() string {
-	flag := false
+	//flag := false
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {
 		os.Stderr.WriteString("Oops: " + err.Error() + "\n")
@@ -43,10 +44,9 @@ func checkip() string {
 	for _, a := range addrs {
 		if ipnet, ok := a.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
 			if ipnet.IP.To4() != nil {
-				if flag {
-					return ipnet.IP.String()
-				}
-				flag = true
+
+				return ipnet.IP.String()
+
 				//os.Stdout.WriteString("IP: " + ipnet.IP.String() + "\n")
 			}
 		}
@@ -59,8 +59,8 @@ func extract(ip string) (int, error) {
 
 	re := regexp.MustCompile(`([0-9]+)`)
 
-	fmt.Printf("Pattern: %v\n", re.String()) // print pattern
-	fmt.Println(re.MatchString(str1))        // true
+	//fmt.Printf("Pattern: %v\n", re.String()) // print pattern
+	fmt.Println(re.MatchString(str1)) // true
 
 	submatchall := re.FindAllString(str1, -1)
 	return strconv.Atoi(submatchall[len(submatchall)-1])

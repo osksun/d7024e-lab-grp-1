@@ -9,9 +9,11 @@ import (
 	"regexp"
 	"strconv"
 	"./d7024e"
+	"time"
 )
 
 func main() {
+	rand.Seed(time.Now().UTC().UnixNano())
 	joinip := getJoin()
 	log.Println("Joining to node: " + joinip)
 	node := d7024e.NewNode(checkip() + ":8000", "")

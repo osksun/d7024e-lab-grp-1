@@ -17,6 +17,7 @@ func Contacts() Cmd{
 			for i := 0; i < len(buckets); i++ {
 				for contact := buckets[i].list.Front(); contact != nil; contact = contact.Next() {
 					contact := contact.Value.(Contact)
+					contact.CalcDistance(cli.node.rt.me.ID)
 					contactListStr +=  strconv.Itoa(i) + "\t| " + contact.Address + "\t| " + contact.ID.String() + "| " + contact.Distance.String() + "\n"
 				}
 			}

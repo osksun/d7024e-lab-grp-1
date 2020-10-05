@@ -16,7 +16,7 @@ func main() {
 	joinip := getJoin()
 	log.Println("Joining to node: " + joinip)
 	node := d7024e.NewNode("localhost:8000", "")
-	node.SpinupNode(false, true, joinip)
+	node.SpinupNode(false, true, joinip+":8000")
 
 }
 

@@ -14,7 +14,6 @@ type Node struct {
 	kademlia *Kademlia
 }
 
-
 // NewNode Constructor function for Node class
 func NewNode(address string, kademliaID string) *Node {
 	node := &Node{}
@@ -33,9 +32,14 @@ func NewNode(address string, kademliaID string) *Node {
 }
 
 // SpinupNode creates http server and listens on contact address
-func (node *Node) SpinupNode(cliRunOnce bool, cliVerbose bool) {
+func (node *Node) SpinupNode(cliRunOnce bool, cliVerbose bool, address string) {
 	serveMux := http.NewServeMux()
 	go node.net.Listen(node.contact.Address, serveMux)
 	go node.net.handleChannels()
+	// join the address
+	if address != "" {
+		//join the address
+		node.kademlia.JoinNetwork(address, node.net.findNodeChannel)
+	}
 	NewCli(node, os.Stdin).Run(cliRunOnce, cliVerbose)
 }

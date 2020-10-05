@@ -205,7 +205,13 @@ func (kademlia *Kademlia) receiveFindNodeResponses(queryContacts *[]*Contact, sh
 		case findNodeResponse, ok := <- findNodeResponseChannel:
 			if ok {
 				// TODO handle replies later than maxRoundTime
-				findNodeResponse.sender.queried = true
+				// Note that the responding contact has been successfully queired
+				for i := 0; i < len(*queryContacts); i++ {
+					if (*queryContacts)[i].ID.Equals(findNodeResponse.sender.ID) {
+						(*queryContacts)[i].queried = true
+						break
+					}
+				}
 				if !queryNewContacts {
 					// Since we don't want to query any of the new contacts we set their queried variable to true
 					for i := 0; i < len(findNodeResponse.contacts); i++ {

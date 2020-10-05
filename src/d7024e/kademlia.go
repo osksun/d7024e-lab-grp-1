@@ -247,7 +247,13 @@ func (kademlia *Kademlia) receiveFindDataResponses(queryContacts *[]*Contact, sh
 					return findDataResponse.data, responsesReceived
 				}
 				// TODO handle replies later than maxRoundTime
-				findDataResponse.sender.queried = true
+				// Note that the responding contact has been successfully queired
+				for i := 0; i < len(*queryContacts); i++ {
+					if (*queryContacts)[i].ID.Equals(findDataResponse.sender.ID) {
+						(*queryContacts)[i].queried = true
+						break
+					}
+				}
 				if !queryNewContacts {
 					// Since we don't want to query any of the new contacts we set their queried variable to true
 					for i := 0; i < len(findDataResponse.contacts); i++ {

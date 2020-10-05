@@ -78,13 +78,13 @@ func (candidates *ContactCandidates) Less(i, j int) bool {
 	return candidates.contacts[i].Less(&candidates.contacts[j])
 }
 
-// RemoveDuplicates removes duplicate contacts based on address values
+// RemoveDuplicates removes duplicate contacts based on KademliaID
 func (candidates *ContactCandidates) RemoveDuplicates() {
-	keys := make(map[string]bool)
+	keys := make(map[KademliaID]bool)
 	list := []Contact{}
 	for i := 0; i < candidates.Len(); i++ {
-		if _, value := keys[candidates.contacts[i].Address]; !value {
-			keys[candidates.contacts[i].Address] = true
+		if _, value := keys[*candidates.contacts[i].ID]; !value {
+			keys[*candidates.contacts[i].ID] = true
 			list = append(list, candidates.contacts[i])
 		}
 	}

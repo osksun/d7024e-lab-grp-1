@@ -102,7 +102,7 @@ func (candidates *ContactCandidates) removeContacts(contacts []*Contact) {
 func (candidates *ContactCandidates) remove(kademliaID *KademliaID) {
 	for i := 0; i < candidates.Len(); i++ {
 		if candidates.contacts[i].ID.Equals(kademliaID) {
-			candidates.contacts [i] = candidates.contacts [len(candidates.contacts ) - 1]
+			candidates.contacts [i] = candidates.contacts[len(candidates.contacts ) - 1]
 			candidates.contacts = candidates.contacts[:len(candidates.contacts ) - 1]
 		}
 	}

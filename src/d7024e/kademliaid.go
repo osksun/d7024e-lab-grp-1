@@ -80,7 +80,7 @@ func (kademliaID *KademliaID) String() string {
 func (kademliaID *KademliaID) NewKademliaIDWithinRange() *KademliaID {
 	var flag bool = true
 	var resultKademliaID *KademliaID
-	var neighbouringID *KademliaID = kademliaID
+	var neighbouringID KademliaID = *kademliaID
 	var firstBitMask byte = 1
 
 	if kademliaID[IDLength-1]&firstBitMask == 0 {
@@ -90,7 +90,7 @@ func (kademliaID *KademliaID) NewKademliaIDWithinRange() *KademliaID {
 	}
 	for ok := true; ok; ok = flag {
 		resultKademliaID = NewRandomKademliaID()
-		if !(resultKademliaID.Equals(kademliaID)) || !(resultKademliaID.Equals(neighbouringID)) {
+		if !(resultKademliaID.Equals(kademliaID)) || !(resultKademliaID.Equals(&neighbouringID)) {
 			flag = false
 		}
 	}

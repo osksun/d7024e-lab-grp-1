@@ -1,7 +1,7 @@
 package d7024e
 
-func leftPad(str string, pad rune, lenght int) string {
-	for i := len(str); i < lenght; i++ {
+func leftPad(str string, pad rune, length int) string {
+	for i := len(str); i < length; i++ {
 		str = string(pad) + str
 	}
 	return str

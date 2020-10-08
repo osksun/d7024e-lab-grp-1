@@ -7,17 +7,17 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"time"
 	"strings"
+	"time"
 )
 
 type Network struct {
-	rt				*RoutingTable
-	ht				*ValueHashtable
+	rt              *RoutingTable
+	ht              *ValueHashtable
 	findNodeChannel chan findNodeRequest
-	storeChannel	chan storeRequest
-	findDataChannel	chan findDataRequest
-	exitChannel		chan bool
+	storeChannel    chan storeRequest
+	findDataChannel chan findDataRequest
+	exitChannel     chan bool
 }
 
 type msg struct {
@@ -36,33 +36,33 @@ type response_msg struct {
 }
 
 type findNodeRequest struct {
-	target			*Contact
-	receiver		*Contact
-	responseChannel	chan findNodeResponse
+	target          *Contact
+	receiver        *Contact
+	responseChannel chan findNodeResponse
 }
 
 type findNodeResponse struct {
-	sender		Contact
-	contacts	[]Contact
+	sender   Contact
+	contacts []Contact
 }
 
 type storeRequest struct {
-	receiver 	*Contact
-	hash 		[HashSize]byte
-	data 		[]byte
+	receiver *Contact
+	hash     [HashSize]byte
+	data     []byte
 }
 
 type findDataRequest struct {
-	hash			[HashSize]byte
-	target			*Contact
-	receiver		*Contact
+	hash            [HashSize]byte
+	target          *Contact
+	receiver        *Contact
 	responseChannel chan findDataResponse
 }
 
 type findDataResponse struct {
-	sender		Contact
-	data		[]byte
-	contacts	[]Contact
+	sender   Contact
+	data     []byte
+	contacts []Contact
 }
 
 // NewNetwork Constructor function for Network class
@@ -81,13 +81,13 @@ func (network *Network) handleChannels() {
 	exit := false
 	for !exit {
 		select {
-		case findNodeRequest := <- network.findNodeChannel:
+		case findNodeRequest := <-network.findNodeChannel:
 			network.SendFindContactMessage(findNodeRequest)
-		case storeRequest := <- network.storeChannel:
+		case storeRequest := <-network.storeChannel:
 			network.SendStoreMessage(storeRequest)
-		case findDataRequest := <- network.findDataChannel:
+		case findDataRequest := <-network.findDataChannel:
 			network.SendFindDataMessage(findDataRequest)
-		case exit = <- network.exitChannel:
+		case exit = <-network.exitChannel:
 		}
 	}
 }
@@ -193,7 +193,7 @@ func (network *Network) sendhelper(mes string, hash [HashSize]byte, data []byte,
 func (network *Network) Listen(address string, serveMux *http.ServeMux) {
 	fmt.Println("Server starting on:", address)
 	serveMux.HandleFunc("/msg", network.handleListen)
-	log.Fatal(http.ListenAndServe(":" + strings.Split(address, ":")[1], serveMux))
+	log.Fatal(http.ListenAndServe(":"+strings.Split(address, ":")[1], serveMux))
 }
 
 func (network *Network) SendPingMessage(receiver *Contact) bool {
@@ -219,7 +219,7 @@ func (network *Network) SendFindContactMessage(request findNodeRequest) {
 	c2 := make(chan response_msg, 1)
 	go func() {
 		var nilHash [HashSize]byte
-		rm := network.sendhelper("findcontact", nilHash, nil, request.target, "http://" + request.receiver.Address + "/msg")
+		rm := network.sendhelper("findcontact", nilHash, nil, request.target, "http://"+request.receiver.Address+"/msg")
 		c1 <- rm
 		c2 <- rm
 	}()
@@ -240,7 +240,7 @@ func (network *Network) SendFindDataMessage(request findDataRequest) {
 	c1 := make(chan response_msg, 1)
 	c2 := make(chan response_msg, 1)
 	go func() {
-		rm := network.sendhelper("finddata", request.hash, nil, request.target, "http://" + request.receiver.Address + "/msg")
+		rm := network.sendhelper("finddata", request.hash, nil, request.target, "http://"+request.receiver.Address+"/msg")
 		c1 <- rm
 		c2 <- rm
 	}()
@@ -248,16 +248,26 @@ func (network *Network) SendFindDataMessage(request findDataRequest) {
 	if network.VibeCheck(c1) {
 		rm := <-c2
 		go network.NetAddCont(rm.Responder)
-		if rm.ContactList == nil {
-			log.Println("Error: node has no contacts and returns nil")
-		}
+
 		request.responseChannel <- findDataResponse{rm.Responder, rm.Data, rm.ContactList}
 	}
 }
 
 // Tells the receiving node to store the data
 func (network *Network) SendStoreMessage(request storeRequest) {
-	network.sendhelper("store", request.hash, request.data, nil, "http://" + request.receiver.Address + "/msg")
+	c1 := make(chan response_msg, 1)
+	c2 := make(chan response_msg, 1)
+	go func() {
+		rm := network.sendhelper("store", request.hash, request.data, nil, "http://"+request.receiver.Address+"/msg")
+		c1 <- rm
+		c2 <- rm
+	}()
+	if network.VibeCheck(c1) {
+		rm := <-c2
+		go network.NetAddCont(rm.Responder)
+
+		//request.responseChannel <- findDataResponse{rm.Responder, rm.Data, rm.ContactList}
+	}
 }
 
 func (network *Network) VibeCheck(c1 chan response_msg) bool {

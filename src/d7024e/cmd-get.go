@@ -1,9 +1,5 @@
 package d7024e
 
-import (
-	"encoding/hex"
-)
-
 // Get command for the cli
 func Get() Cmd{
 	return Cmd{

@@ -126,7 +126,7 @@ func (network *Network) handleListen(rw http.ResponseWriter, req *http.Request) 
 		network.ht.Put(m.Hash, m.Data)
 		mes = "Response from store"
 	default:
-		log.Println("server received an invalid message")
+		//log.Println("server received an invalid message")
 		mes = "Response invalid message"
 	}
 

@@ -26,16 +26,18 @@ func NewCli(node *Node, rd io.Reader) *Cli {
 // Run starts the cli
 func (cli *Cli) Run(runOnce bool, verbose bool) int {
 	if runOnce {
-		cli.handleInput(cli.getInput(), verbose)
+		cli.handleInput(cli.getInput(verbose), verbose)
 		return 0
 	}
 	for {
-		cli.handleInput(cli.getInput(), verbose)
+		cli.handleInput(cli.getInput(verbose), verbose)
 	}
 }
 
-func (cli *Cli) getInput() string {
-	fmt.Print(">")
+func (cli *Cli) getInput(verbose bool) string {
+	if verbose {
+		fmt.Print(">")
+	}
 	input, _ := cli.reader.ReadString('\n')
 	input = strings.Trim(input,"\n")
 	input = strings.Trim(input,"\r")

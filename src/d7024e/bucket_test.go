@@ -84,7 +84,7 @@ func TestGetLast(t *testing.T) {
 	if bucket.GetLast().ID != nct.ID {
 		t.Error("Bucket didn't get the last correct element.")
 	}
-	fmt.Println("TestGetLast finished running with status OK")
+	//fmt.Println("TestGetLast finished running with status OK")
 }
 
 func TestGetFirst(t *testing.T) {

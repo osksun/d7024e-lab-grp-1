@@ -75,7 +75,7 @@ func TestGetInput(t *testing.T) {
 	input := "test"
 	node := NewNode("localhost:0000", "")
 	cli := NewCli(node, strings.NewReader(input + "\n"))
-	returnedInput := cli.getInput()
+	returnedInput := cli.getInput(false)
 	if returnedInput != input {
 		t.Errorf("Expected input \"%s\" but got \"%s\"\n", input, returnedInput)
 	}

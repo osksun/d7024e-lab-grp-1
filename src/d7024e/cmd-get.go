@@ -9,11 +9,9 @@ func Get() Cmd{
 	return Cmd{
 		triggers: []string{"get", "g"},
 		description: "Get content of a file",
-		usage: "\"get hashOfFileName\", \"g hashOfFileName\"",
+		usage: "\"get fileName\", \"g fileName\"",
 		action: func(cli *Cli, args ...string) string {
-			filenameHashSlice, _ := hex.DecodeString(args[0])
-			var filenameHash [HashSize]byte
-			copy(filenameHash[:], filenameHashSlice)
+			filenameHash := Hash([]byte(args[0]))
 			data := cli.node.kademlia.LookupData(filenameHash, cli.node.net.findDataChannel)
 			return "Returned content: \"" + string(data) + "\""
 		},

@@ -15,7 +15,7 @@ func Put() Cmd{
 			filename := []byte(args[0])
 			content := []byte(strings.Join(args[1:len(args)], " "))
 			hash := cli.node.kademlia.Store(filename, content, cli.node.net.storeChannel, cli.node.net.findNodeChannel)
-			return "Returned hash (hex): \"" + hex.EncodeToString(hash[:]) + "\"\n"
+			return "Returned hash (hex): \"" + hex.EncodeToString(hash[:]) + "\""
 		},
 	}
 }

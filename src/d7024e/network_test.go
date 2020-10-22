@@ -24,7 +24,7 @@ func TestNewNetwork(t *testing.T) {
 	if nType != "*d7024e.Network" {
 		t.Error("The network is not of type network")
 	}
-	fmt.Println("TestNewNetwork finished running with status OK")
+	//fmt.Println("TestNewNetwork finished running with status OK")
 }
 
 type TestHttpHandler struct {
@@ -63,17 +63,8 @@ func TestHandleSender(t *testing.T) {
 		}
 
 	}
-	fmt.Println("TestHandleSender finished running with status OK")
+	//fmt.Println("TestHandleSender finished running with status OK")
 }
-
-// Not sure how to test this one
-
-// // I guess you need to run this function as a go func
-// func (network *Network) Listen(address string, serveMux *http.ServeMux) {
-// 	fmt.Println("Server starting on:", address)
-// 	serveMux.HandleFunc("/msg", network.handleListen)
-// 	log.Fatal(http.ListenAndServe(address, serveMux))
-// }
 
 func TestSendPing(t *testing.T) {
 	kID1, _ := NewKademliaID("FFFFFFFF00000000000000000000000000000000")
@@ -94,7 +85,7 @@ func TestSendPing(t *testing.T) {
 	if resp != true {
 		t.Error("SendPingMessage failed the test.")
 	}
-	fmt.Println("TestSendPing finished running with status OK")
+	//fmt.Println("TestSendPing finished running with status OK")
 }
 
 func TestSendFindContactMessage(t *testing.T) {
@@ -124,7 +115,7 @@ func TestSendFindContactMessage(t *testing.T) {
 		t.Error("SendFindContactMessage failed the test.")
 	}
 	*/
-	fmt.Println("TestSendFindContactMessage finished running with status OK")
+	//fmt.Println("TestSendFindContactMessage finished running with status OK")
 }
 
 func TestSendFindDataMessage(t *testing.T) {
@@ -182,7 +173,7 @@ func TestSendStoreMessage(t *testing.T) {
 	if reflect.DeepEqual(n2.ht.Get(hash), data) == false {
 		t.Error("SendStoreMessage failed the test.")
 	}
-	fmt.Println("TestSendStoreMessage finished running with status OK")
+	//fmt.Println("TestSendStoreMessage finished running with status OK")
 }
 
 func TestVibeCheck(t *testing.T) {

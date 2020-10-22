@@ -15,7 +15,7 @@ func TestNewBucket(t *testing.T) {
 	if bType != "*d7024e.bucket" {
 		t.Error("The bucket is not of type bucket")
 	}
-	fmt.Println("TestNewBucket finished running with status OK")
+	//fmt.Println("TestNewBucket finished running with status OK")
 }
 
 func TestBucketAddContact(t *testing.T) {
@@ -35,7 +35,7 @@ func TestBucketAddContact(t *testing.T) {
 	if bucket.GetFirst().ID != nct.ID {
 		t.Error("Bucket didn't move the contact to the front.")
 	}
-	fmt.Println("TestBucketAddContact finished running with status OK")
+	//fmt.Println("TestBucketAddContact finished running with status OK")
 }
 
 func TestGetContactAndCalcDistance(t *testing.T) {
@@ -55,7 +55,7 @@ func TestGetContactAndCalcDistance(t *testing.T) {
 	if contacts[0].Distance.String() != "fffffff000000000000000000000000000000000" || contacts[1].Distance.String() != "ffffffff00000000000000000000000000000000" {
 		t.Error("Bucket didn't calculate the distance correctly.")
 	}
-	fmt.Println("TestGetContactAndCalcDistance finished running with status OK")
+	//fmt.Println("TestGetContactAndCalcDistance finished running with status OK")
 }
 
 func TestLen(t *testing.T) {
@@ -69,7 +69,7 @@ func TestLen(t *testing.T) {
 	if bucket.Len() != 2 {
 		t.Error("Bucket didn't return the correct length.")
 	}
-	fmt.Println("TestLen finished running with status OK")
+	//fmt.Println("TestLen finished running with status OK")
 }
 
 func TestGetLast(t *testing.T) {
@@ -99,5 +99,5 @@ func TestGetFirst(t *testing.T) {
 	if bucket.GetFirst().ID != nct2.ID {
 		t.Error("Bucket didn't get the first correct element.")
 	}
-	fmt.Println("TestGetFirst finished running with status OK")
+	//fmt.Println("TestGetFirst finished running with status OK")
 }

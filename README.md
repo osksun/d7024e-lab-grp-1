@@ -56,4 +56,4 @@ While in the Kademlia CLI the exit command is available and used by running the 
 ```
 exit
 ```
-This will exit and terminate the container. For exiting the container without ternminating see section [**Detach from a container without shutting down the container**](#building-docker-image).
+This will exit and terminate the container. For exiting the container without ternminating see section [**Detach from a container without shutting down the container**](#detach-from-a-container-without-shutting-down-the-container).
